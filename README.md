@@ -42,8 +42,11 @@ At game startup, the console should ask for the desired mode. Display a list of 
 where the user can enter either 1 or 2.
 
 In two player mode, player1’s piece should initially be placed in the middle column of the bottom row, and player2’s piece in the middle of the top row. Use the following symbols to mark the board:
-P1, P2 : Location of Player 1 and 2’s pieces, respectively;
-X1, X2 : Spaces previously occupied (and thus made unavailable anymore) by players 1 and 2, respectively. 
+
+* P1, P2 : Location of Player 1 and 2’s pieces, respectively;
+* X1, X2 : Spaces previously occupied (and thus made unavailable anymore) by players 1 and 2, respectively.
+
+ 
 Players will specify their next move by entering one of *N, E, S, W* (case insensitive), corresponding to the four available locations. If the player enters an invalid direction, then your game should notify the player. If the player chooses to move to a location that is unavailable (marked as either X1 or X2), your program should notify the player about this and allow them to enter a different direction. Also, your console should indicate whose turn it is.
 
 **Note:** Your console should NOT scroll down as the game goes on. This will make playing the game a horrible experience. Make sure the board is visible all the time on the console, and its location fixed as players are prompted to enter their directions.  
@@ -81,7 +84,7 @@ START_CONFIG
 END_CONFIG
 ```
 
-The entry DIMENSION is mandatory, and its value should be an integer between 1 to n.
+The entry DIMENSION is mandatory, and its value should be an integer between 1 to *n*.
 
 A BOARD block should always contain both P1\_LOCATION and P2\_LOCATION entries, each on a newline, and having the form `P1_LOCATION : [row, column]`
 (the colon is mandatory, as well as the brackets [ and ]); row and column are integers, each between 1 and DIMENSION.
@@ -96,8 +99,11 @@ Your program should report that the given file is invalid if it does not syntact
 If the given file is valid, then you should load the game in memory; i.e., create all the objects, initialize all the data structures, and store all BOARD configurations to be able to save them later if the user desires so. The process of converting the in-memory objects to strings is called Serialization. Deserialization is defined in the obvious way. See [Wikipedia's page on serialization](https://en.wikipedia.org/wiki/Serialization). 
    
 ### More on the GUI:
-Your GUI should indicate a way to the user to “quit and save” the game and store it so that it can be resumed later on. If at any time during the game a player chooses to quit, the console should ask the user whether or not they would like to “save” the game, and if the user answers yes, then the user will be prompted to enter a file name. If the game to be saved is a reloaded (resumed) one; i.e., has been saved before, then give the user the original file name as the “default” option, but allow the user to change this file name. If the user changes the file name of a reloaded game, this change should be reflected on your file system (i.e., rename the file without duplicating it.) At startup, if the user chooses Resume mode, then the user is prompted for a file path. Your program should look up the given file, and verify that it is valid as described above. Then your program should simulate the given game a BOARD at a time: On your board, show every move in the same sequence as in the file, with the occupied locations and pieces marked properly. 
-Introduce some delay between every two moves in your simulation so that the replay is visually traceable (and appealing!). The game should subsequently resume, giving control back to the player whose turn is next. If the loaded game is finished, i.e., one player will lose with certainty no matter what moves they make (you are required to compute the earliest such time above), then your program should declare so and announce the winner, and no further plays should be allowed. This latter situation is the realization of the Replay mode.  
+Your GUI should indicate a way to the user to “quit and save” the game and store it so that it can be resumed later on. If at any time during the game a player chooses to quit, the console should ask the user whether or not they would like to “save” the game, and if the user answers yes, then the user will be prompted to enter a file name. If the game to be saved is a reloaded (resumed) one; i.e., has been saved before, then give the user the original file name as the “default” option, but allow the user to change this file name. If the user changes the file name of a reloaded game, this change should be reflected on your file system (i.e., rename the file without duplicating it.) 
+
+At startup, if the user chooses **Resume** mode, then the user is prompted for a file path. Your program should look up the given file, and verify that it is valid as described above. Then your program should ***simulate*** the given game a BOARD at a time: On your board, *show every move in the same sequence as in the file, with the occupied locations and pieces marked properly.*
+
+Introduce some delay between every two moves in your simulation so that the replay is visually traceable (and appealing!). The game should subsequently resume, giving control back to the player whose turn is next. If the loaded game is finished, i.e., one player will lose with certainty no matter what moves they make (you are required to compute the earliest such time above), then your program should declare so and announce the winner, and no further plays should be allowed. This latter situation is the realization of the **Replay** mode.
 
 
 To reload a game, you should implement a **Parser** that works according to rules above. You are given skeleton code you can make use of to scan a given file line by line. It is a partial implementation of the method `bool open(String fileName)` in class *Game*.
