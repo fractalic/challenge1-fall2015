@@ -10,7 +10,7 @@ However, your program must be able to detect the *earliest* time at which the ga
 
 There will be two basic playing modes: **Two-player** and **Resume/Replay**. Two other modes, namely **Single-player** and **Movie**, are left as challenges.
 
-##Part 1: Writing API and Specs 
+##Part 1: Writing APIs and Specs 
 The first goal of this assignment is to design a clean, minimal API that would allow players (or bots) to play the game. Those are classes and public member methods that define all the operations required by a bot to play the game, along with the functions required to declare that the game has concluded and announce the winner.
 
 **First read Parts 2 and 3 to acquire a thorough understanding of what is required from your program. Do not think about implementation at this point; just think about the functionalities that you need to expose to “users” of your program; that is, the API.** 
