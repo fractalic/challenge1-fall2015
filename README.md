@@ -1,6 +1,6 @@
 # CPEN 221 - Fall 2015 - MP1
 
-### CPEN221 Game
+#### CPEN221 Game
 
 
 ## Introduction
