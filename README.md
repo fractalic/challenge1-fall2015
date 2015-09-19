@@ -4,7 +4,7 @@
 
 
 ## Introduction
-CPEN221 is a simple two-player strategy board game played on an *n ⨉ n* grid. Each player has a piece, and on each turn the player must move their piece in one of the four cardinal directions *North, South, East and West*, for only one grid per play (skipping grids is not allowed). Each previously occupied place becomes unavailable to both players, and the players can move their pieces only to available places. A player loses if their piece gets trapped in unavailable space (or unavailable space and the wall). 
+CPEN221 is a simple two-player strategy game played on an *n ⨉ n* board. Each player has a piece, and on each turn the player must move their piece in one of the four cardinal directions *North, South, East and West*, for only one grid per play (skipping grids is not allowed). Each previously occupied place (grid) becomes unavailable to both players, and the players can move their pieces only to available places. A player loses if their piece gets trapped in unavailable space (or unavailable space and the wall). 
 
 However, your program must be able to detect the *earliest* time at which the game finishes; i.e., the first move after which the player will lose no matter what subsequent moves the player makes. Thus you program should declare that the game has ended as soon as this becomes known with certainty, even if both players have available places to move their pieces to; you should also declare the winning player as soon as the latter happens.
 
