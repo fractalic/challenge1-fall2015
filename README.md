@@ -89,14 +89,16 @@ The entry DIMENSION is mandatory, and its value should be an integer between 1 t
 A BOARD block should always contain both P1\_LOCATION and P2\_LOCATION entries, each on a newline, and having the form `P1_LOCATION : [row, column]`
 (the colon is mandatory, as well as the brackets [ and ]); row and column are integers, each between 1 and DIMENSION.
 
-Every play, or board configuration, is recorded in a BOARD block. When parsing the file, your program should make sure that file is valid. The file should always start with a CONFIG block that contains the dimension of the board (number of grids per side of our square board).
-The file should contain at least one BOARD block (the initial board), following the CONFIG block. Your parser should ignore newlines and white spaces in the game file. Your program should check that the syntax of the loaded game file is correct. Not only the syntax should be correct, but the sequence of BOARD blocks should be valid; that is, for every consecutive pair of BOARD blocks, you should check that:
-The two blocks are played by different players,
- In the second block, the player’s move is legal; that is, the player moves to a location is both valid (within the board boundaries) and available, given the set of BOARD blocks parsed so far. 
+Every play, or board configuration, is recorded in a BOARD block. When parsing the file, your program should make sure that file is *valid*. The file should always start with a CONFIG block that contains the dimension of the board (number of grids per side of our square board).
 
-Your program should report that the given file is invalid if it does not syntactically follow our rules (you do NOT need to show where the error happened in the file). If the game in the file is invalid, your program should just report so.
+The file should contain at least one BOARD block (the initial board) following the CONFIG block. Your parser should ignore empty lines and white spaces in the game file. Your parser should check that the syntax of the loaded game file is correct. Not only the syntax should be correct, but also the sequence of BOARD blocks should be valid; that is, for every consecutive pair of BOARD blocks, you should check that:
 
-If the given file is valid, then you should load the game in memory; i.e., create all the objects, initialize all the data structures, and store all BOARD configurations to be able to save them later if the user desires so. The process of converting the in-memory objects to strings is called Serialization. Deserialization is defined in the obvious way. See [Wikipedia's page on serialization](https://en.wikipedia.org/wiki/Serialization). 
+1. The two blocks are played by different players, and 
+2. In the second block, the player’s move is *legal*; that is, given the set of BOARD blocks parsed so far, the player moves to a location that is both valid (i.e., within the board boundaries), and available.  
+
+Your program should report that the given file is invalid if it does not syntactically follow our rules (you do NOT need to show where the error happened in the file). If the game file is syntactically correct but the game is invalid, your program should report so.
+
+If the given file is valid, then you should load the game in memory; i.e., create all the objects, initialize all the data structures, and store all BOARD configurations to be able to save them later if the user desires so. The process of converting in-memory objects to strings is called Serialization. Deserialization is defined in the obvious way. See [Wikipedia's page on serialization](https://en.wikipedia.org/wiki/Serialization). 
    
 ### More on the GUI:
 Your GUI should indicate a way to the user to “quit and save” the game and store it so that it can be resumed later on. If at any time during the game a player chooses to quit, the console should ask the user whether or not they would like to “save” the game, and if the user answers yes, then the user will be prompted to enter a file name. If the game to be saved is a reloaded (resumed) one; i.e., has been saved before, then give the user the original file name as the “default” option, but allow the user to change this file name. If the user changes the file name of a reloaded game, this change should be reflected on your file system (i.e., rename the file without duplicating it.) 
