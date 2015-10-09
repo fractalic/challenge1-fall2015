@@ -7,7 +7,26 @@ import java.util.Scanner;
 public class Game {
 	
 	public enum Mode {
+		
+		TWO_PLAYER("Two Player"),
+		ONE_PLAYER("One Player"),
+	    RESUME("Resume"),
+		MOVIE("Movie");
+		
 
+	    private final String text;
+
+	    private Mode(final String text) {
+	        this.text = text;
+	    }
+
+	    /* (non-Javadoc)
+	     * @see java.lang.Enum#toString()
+	     */
+	    @Override
+	    public String toString() {
+	        return text;
+	    }
 	}
 
 
