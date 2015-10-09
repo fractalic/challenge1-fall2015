@@ -8,16 +8,18 @@ public class Game {
 	
 	public enum Mode {
 		
-		TWO_PLAYER("Two Player"),
-		ONE_PLAYER("One Player"),
-	    RESUME("Resume"),
-		MOVIE("Movie");
+		TWO_PLAYER(0, "Two Player"),
+		ONE_PLAYER(1, "One Player"),
+		BOT_BATTLE(2, "Bot Battle");
 		
 
 	    private final String text;
+	    private final int ID;
 
-	    private Mode(final String text) {
+
+	    private Mode(final int ID, final String text) {
 	        this.text = text;
+	        this.ID = ID;
 	    }
 
 	    /* (non-Javadoc)
@@ -25,8 +27,9 @@ public class Game {
 	     */
 	    @Override
 	    public String toString() {
-	        return text;
+	        return this.text;
 	    }
+	    
 	}
 
 
