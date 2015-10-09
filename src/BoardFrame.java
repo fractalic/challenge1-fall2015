@@ -12,6 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import java.awt.GridLayout;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class BoardFrame extends JFrame{
 
@@ -48,6 +51,33 @@ public class BoardFrame extends JFrame{
 		this.rowCount    = rowCount;
 		this.columnCount = columnCount;
 		this.title += " - " + mode.toString() + " Mode";
+		
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		{
+			JMenu mnFile = new JMenu("File");
+			menuBar.add(mnFile);
+			{
+				JMenuItem mntmOpen = new JMenuItem("Open");
+				mnFile.add(mntmOpen);
+			}
+			{
+				JMenuItem mntmSave = new JMenuItem("Save");
+				mnFile.add(mntmSave);
+			}
+			{
+				JMenuItem mntmSaveAndQuit = new JMenuItem("Save and Quit");
+				mnFile.add(mntmSaveAndQuit);
+			}
+			{
+				JMenuItem mntmQuit = new JMenuItem("Quit");
+				mnFile.add(mntmQuit);
+			}
+		}
+		{
+			JMenuItem mntmHelp = new JMenuItem("Help");
+			menuBar.add(mntmHelp);
+		}
 		
 		initialize();
 	}
