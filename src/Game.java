@@ -6,16 +6,21 @@ import java.util.Scanner;
 
 public class Game {
 	
+	public enum Mode {
+
+	}
+
+
 	public Game(){}
 	
 	/* Mode is one of SINGLE_PLAYER, TWO_PLAYER, RESUME and MOVIE */
-	Game(Mode mode){}
-	Mode getMode(){}
+	public Game(Mode mode){}
+	public Mode getMode(){}
 
-	bool isGameFinished(){}
-	Player getWinner(){}
-	void setBoard(Board board){}
-	void setPlayer(Player player){}
+	public boolean isGameFinished(){ return false; }
+	public Player getWinner(){ return null; }
+	public void setBoard(Board board){}
+	public void setPlayer(Player player){}
 
 	void save(){}
 	
@@ -28,7 +33,7 @@ public class Game {
 	 * @return true if file is valid game and opened successfully, 
 	 * 		   false otherwise 
 	 */
-	void open(String fileName) throws IOException{
+	public void open(String fileName) throws IOException{
 
 		/* To save the game to the same file later if desired */
 		this.fileName = fileName; 

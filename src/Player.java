@@ -1,11 +1,14 @@
 public class Player {
 	
+	public enum PlayerType {
+
+	}
 	public Player(){}
 	public Player(PlayerType type){}
 	public Player(String name, PlayerType type){}
 
-	Location getLocation(){}
-	bool moveTo(Direction direction){}	
-	Location getOpponentLocation();{}
+	public Location getLocation(){}
+	public boolean moveTo(Direction direction){ return false; }	
+	public Location getOpponentLocation(){ return false; }
 }
 
