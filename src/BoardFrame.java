@@ -15,7 +15,8 @@ import java.awt.GridLayout;
 
 public class BoardFrame extends JFrame{
 
-	private final String TITLE           = "CPEN221 Game";
+	private  String title           = "CPEN221 Game";
+	
 	private final String PLAYER1_MARKER  = "P1";
 	private final String PLAYER2_MARKER  = "P2";
 	private String       PLAYER1_NAME    = "P1";
@@ -42,10 +43,11 @@ public class BoardFrame extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	public BoardFrame(int rowCount, int columnCount) {
+	public BoardFrame(int rowCount, int columnCount, Game.Mode mode) {
 		
 		this.rowCount    = rowCount;
 		this.columnCount = columnCount;
+		this.title += " - " + mode.toString() + " Mode";
 		
 		initialize();
 	}
@@ -68,7 +70,7 @@ public class BoardFrame extends JFrame{
 	    
 		
 	    //this.frmCpenGame = new JFrame();
-		this.setTitle(TITLE + " - Two Player Mode");
+		this.setTitle(this.title);
 		this.setBounds(100, 100, 1000, 1000);
 	    
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

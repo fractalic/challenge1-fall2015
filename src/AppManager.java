@@ -14,7 +14,7 @@ public class AppManager {
 				try {
 					
 					Object[] possibilities = Game.Mode.values();
-					String selectionText = (String)JOptionPane.showInputDialog(
+					Game.Mode mode = (Game.Mode)JOptionPane.showInputDialog(
 					                    null,
 					                    "Select Play Mode",
 					                    "Mode Selection",
@@ -24,14 +24,11 @@ public class AppManager {
 					                    possibilities[0]);
 
 					
-					if ((selectionText          == null) || 
-					    (selectionText.length() == 0)) {
-					    return;
-					}
+					if (mode == null) { return; }
 					
-					Game.Mode mode = Game.Mode.ONE_PLAYER; //LookupModeByText(selectionText);
+					//Game.Mode mode = Game.Mode.valueOf(selectionText); 
 					
-					BoardFrame window = new BoardFrame(16, 16);
+					BoardFrame window = new BoardFrame(16, 16, mode);
 					
 					window.setVisible(true);
 				} catch (Exception e) {
