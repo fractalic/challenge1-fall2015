@@ -15,7 +15,7 @@ public class Game {
 	
 	/* Mode is one of SINGLE_PLAYER, TWO_PLAYER, RESUME and MOVIE */
 	public Game(Mode mode){}
-	public Mode getMode(){}
+	public Mode getMode(){ return null; }
 
 	public boolean isGameFinished(){ return false; }
 	public Player getWinner(){ return null; }
@@ -53,9 +53,5 @@ public class Game {
 	
 	private String fileName;
 	
-	
-	public static void main(String [] args){
-		System.out.println("hi");
-	}
 }
 
