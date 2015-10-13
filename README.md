@@ -1,7 +1,6 @@
-# CPEN 221 - Fall 2015 - MP1
-
-#### CPEN221 Game
-
+**CPEN 221 / Fall 2015: Challenge Task 1**
+The CPEN221 Game
+===
 
 ## Introduction
 CPEN221 is a simple two-player strategy game played on an *n ⨉ n* board. Each player has a piece, and on each turn the player must move their piece in one of the four cardinal directions *North, South, East and West*, for only one grid per play (skipping grids is not allowed). Each previously occupied place (grid) becomes unavailable to both players, and the players can move their pieces only to available places. A player loses if their piece gets trapped in unavailable space (or unavailable space and the wall). 
@@ -124,12 +123,14 @@ In the Single-Player mode, one player is a human that plays through the console,
 
 ##Testing
 
-You are asked to develop testing strategies to ensure at least the following:
+You should develop testing strategies to ensure at least the following:
 
 1. Unavailable locations are never occupied again;
 2. Resume/Replay mode works correctly, including both parsing and simulation. We will test your program against our own game files;
 3. Your program can correctly detect the first move at which the game is done and the winner becomes known with certainty;
 4. Test that your 2 strategies are really of varying difficulty. 
 
+## Submission
 
+Submit your work by **Oct 27, 6pm** to a branch called `challenge1` in your Github repository. Then set up a meeting with Bader to discuss your submission.
 
