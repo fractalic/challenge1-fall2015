@@ -4,7 +4,7 @@ The CPEN221 Game
 
 ## Introduction
 
-CPEN221 is a simple two-player strategy game played on an $n \times n$ board. Each player has a piece, and on each turn the player must move their piece in one of the four cardinal directions *North, South, East and West*, for only one grid per play (skipping grids is not allowed). Each previously occupied place (grid) becomes unavailable to both players, and the players can move their pieces only to available places. A player loses if their piece gets trapped in unavailable space (or unavailable space and the wall). 
+CPEN221 is a simple two-player strategy game played on an n ⨉ n board. Each player has a piece, and on each turn the player must move their piece in one of the four cardinal directions *North, South, East and West*, for only one grid per play (skipping grids is not allowed). Each previously occupied place (grid) becomes unavailable to both players, and the players can move their pieces only to available places. A player loses if their piece gets trapped in unavailable space (or unavailable space and the wall). 
 
 However, your program must be able to detect the *earliest* time at which the game finishes; i.e., the first move after which the player will lose no matter what subsequent moves the player makes. Thus you program should declare that the game has ended as soon as this becomes known with certainty, even if both players have available places to move their pieces to; you should also declare the winning player as soon as the latter happens.
 
@@ -22,7 +22,7 @@ You are also asked to write the specs of every public member of your API. *Do no
 Here, two humans will play against each other through the provided window GUI. Implement the API you wrote in Part 1 for the two player mode. You may find that you will need to add more functions to your API as you proceed. As you advance implementing the game, you will find yourself needing to answer the following questions (and more, of course): 
 
 1. How to represent the state of the board? What data structures are useful ? Tree? Binary Matrix with coordinates? Lists? 
-2. Design a **coordinate system** for the board to be able to locate grids. Suggestion: represent each location by a pair $[x,y]$, where $x$ and $y$ run through $0,\dotsc,n-1$. Designate the bottom-left location as the origin $[0,0]$. 
+2. Design a **coordinate system** for the board to be able to locate grids. Suggestion: represent each location by a pair [x,y], where x and y run through 0,...,n-1. Designate the bottom-left location as the origin [0,0]. 
 2. **Design Question**: Should a Board object contain the Players? or should each player object store a copy of the Board? How would players communicate (i.e., make their locations known and retrievable by the opponents ?)
 3. How to keep track of available locations so that to efficiently retrieve the neighbouring available locations ?
 4. How to implement isGameFinished() even when there is a location to move to ?
@@ -33,7 +33,7 @@ Here, two humans will play against each other through the provided window GUI. I
 Players will interact and play through the a swing-based window GUI. You are given skeleton code of the GUI. A relatively decent GUI designer plugin for Eclipse is [WindowBuilder Pro](http://www.eclipse.org/windowbuilder/download.php). This tool can help you get started designing GUIs in Java, but ultimately (in this assignment) you will have to write code manually to create GUI elements. 
 
 
-Our board is square, and consists of clickable buttons. However, the size (number of girds) of the board is not fixed: class BoardFrame receives the number of grids per side of the board, $n$. We call $n$ the **dimension** of the board. Given $n$, BoardFrame draws the grid and marks the initial positions of both players. 
+Our board is square, and consists of clickable buttons. However, the size (number of girds) of the board is not fixed: class BoardFrame receives the number of grids per side of the board, n. We call n the **dimension** of the board. Given n, BoardFrame draws the grid and marks the initial positions of both players. 
 
 Upon start-up, the application prompts the player, through a dialog window, to choose one of 
 
@@ -92,7 +92,7 @@ END_CONFIG
 ```
 
 The entry DIMENSION is mandatory, and its value should be an integer between 1 to *n*.
-MODE is a mandatory fields as well, and it can be one of $\{\text{SINGLE_PLAYER, TWO_PLAYER, BOT_BATTLE}\}$.
+MODE is a mandatory fields as well, and it can be one of {SINGLE\_PLAYER, TWO\_PLAYER, BOT\_BATTLE}.
 A BOARD block should always contain both P1\_LOCATION and P2\_LOCATION entries, each on a newline, and having the form `P1_LOCATION : [row, column]`
 (the colon is mandatory, as well as the brackets [ and ]); row and column are integers, each between 1 and DIMENSION.
 
