@@ -7,8 +7,8 @@ public class Player {
 	public Player(PlayerType type){}
 	public Player(String name, PlayerType type){}
 
-	public Location getLocation(){}
+	public Location getLocation(){ return new Location();}
 	public boolean moveTo(Direction direction){ return false; }	
-	public Location getOpponentLocation(){ return false; }
+	public Location getOpponentLocation(){ return new Location(); }
 }
 
