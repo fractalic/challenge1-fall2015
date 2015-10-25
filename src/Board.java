@@ -24,6 +24,10 @@ public class Board {
 	 * - check if location available
 	 * - mark location unavailable
 	 * - mark location occupied by player
+	 * - serialize (save a board)
+	 * - deserialize (load board state from saved format)
+	 * - Don't support replay here. Just pass out a list of moves using
+	 *   deserialize.
 	 */
 }
 
