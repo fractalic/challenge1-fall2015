@@ -1,7 +1,7 @@
 public class Player {
     
 	
-	public enum PlayerType {
+	public enum Type {
 	    HUMAN(0, "Human player."),
         BOT(1, "Bot with no intelligence."),
         BOT_HARD(2, "Bot with more intelligence.");
@@ -11,7 +11,7 @@ public class Player {
         private final String text;
 
 
-        private PlayerType(final int ID, final String text) {
+        private Type(final int ID, final String text) {
             this.ID = ID;
             this.text = text;
         }
@@ -45,7 +45,7 @@ public class Player {
 	 * @param type The type of the Player.
 	 * @return an unplaced Player.
 	 */
-	public Player(final String name, final PlayerType type){}
+	public Player(final String name, final Player.Type type){}
 
 	/**
 	 * Get the location of the Player on the board.
