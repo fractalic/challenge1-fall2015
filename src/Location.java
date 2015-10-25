@@ -49,7 +49,7 @@ public class Location {
      * @param y The second coordinate of the location.
      * @return An unconstrained location at the specified coordinates.
      */
-    public Location(int x, int y) {
+    public Location(final int x, final int y) {
         this.isConstrained = false;
         this.min = Integer.MIN_VALUE;
         this.max = Integer.MAX_VALUE;
@@ -68,7 +68,7 @@ public class Location {
      * @param max The maximum value of each coordinate.
      * @return A constrained location, at the specified coordinates.
      */
-    public Location(int x, int y, int min, int max) {
+    public Location(final int x, final int y, final int min, final int max) {
         this.isConstrained = true;
         this.min = min;
         this.max = max;
@@ -84,7 +84,7 @@ public class Location {
      * @throws OutOfBoundsException (unchecked) if x and y do not meet constraints.
      * @modifies First and second coordinates of location.
      */
-    public void set(int x, int y) {
+    public void set(final int x, final int y) {
         if (this.isConstrained) {
             if ((x >= min) && (x <= max)) {
                 this.x = x;
@@ -145,7 +145,7 @@ public class Location {
      * @param coordinate The coordinate to retrieve.
      * @return the value of the specified coordinate.
      */
-    public int getCoordinate(Location.Coordinate coordinate) {
+    public int getCoordinate(final Location.Coordinate coordinate) {
         if (coordinate == Coordinate.FIRST) {
             return this.x;
         } else {
