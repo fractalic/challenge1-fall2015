@@ -14,6 +14,28 @@ public class Location {
      * Both x and y are inside the range [min,max]
      * 
      */
+    enum Coordinate {
+        FIRST(0, "First axis of location."),
+        SECOND(1, "Second axis of location.");
+        
+
+        private final int ID;
+        private final String text;
+
+
+        private Coordinate(final int ID, final String text) {
+            this.ID = ID;
+            this.text = text;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Enum#toString()
+         */
+        @Override
+        public String toString() {
+            return this.text;
+        }
+    }
     private final boolean isConstrained;
     private final int min;
     private final int max;
@@ -112,6 +134,20 @@ public class Location {
             return this.min;
         } else {
             return Integer.MIN_VALUE;
+        }
+    }
+    
+    /**
+     * Get the value of a coordinate.
+     * 
+     * @param coordinate The coordinate to retrieve.
+     * @return the value of the specified coordinate.
+     */
+    public int getCoordinate(Location.Coordinate coordinate) {
+        if (coordinate == Coordinate.FIRST) {
+            return this.x;
+        } else {
+            return this.y;
         }
     }
 
