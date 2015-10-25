@@ -41,6 +41,10 @@ public class BoardFrame extends JFrame{
 	JPanel boardPanel  = null; 
 	JPanel infoPanel   = null;
 	
+	Game game = new Game(Game.Mode.TWO_PLAYER);
+	//game.addBoard(new Board(BOARD_DIMENSION));
+	//game.addPlayer(new Player(PLAYER1_NAME, Player.Type.HUMAN));
+	
 	
 
 	/**
