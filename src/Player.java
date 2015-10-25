@@ -1,3 +1,6 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  * Represents a player in the game.
  * Player's can be placed at arbitrary locations, including outside the bounds
@@ -95,6 +98,24 @@ public class Player {
 	public void setLocation(final Location location) {
 	    this.location.set(location.getCoordinate(Location.Coordinate.FIRST),
 	                      location.getCoordinate(Location.Coordinate.SECOND) );
+	}
+	
+	/**
+	 * Get the name of the player.
+	 * 
+	 * @return The name of the player.
+	 */
+	public String getName() {
+	    return this.name;
+	}
+	
+	/**
+	 * Get the type of the player.
+	 * 
+	 * @return The type of the player.
+	 */
+	public Player.Type getType() {
+	    return this.type;
 	}
 	
 	//public boolean moveTo(Direction direction){ return false; }	

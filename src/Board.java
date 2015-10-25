@@ -3,8 +3,6 @@ import java.util.List;
 public class Board {
     
     private int dimension = 0;
-    
-    //public static final Location origin = new Location(0,0);
 	
     /**
      * Create an empty square Board with size
@@ -28,6 +26,9 @@ public class Board {
 	 * - deserialize (load board state from saved format)
 	 * - Don't support replay here. Just pass out a list of moves using
 	 *   deserialize.
+	 * - I want to implement a second board type which allows simulation of all
+	 *   possible movements in order to determine the optimal move for an ai player.
+	 *   This board can then recommend moves to AI Players.
 	 */
 }
 
