@@ -99,18 +99,19 @@ public class Game {
 	 * @requires No boards have been added to the game.
 	 * @throws InvalidStateException (unchecked) if the game already has an associated Board.
 	 */
-	public void addBoard(Board board){}
+	public void addBoard(Board board) {}
 	
 	/**
 	 * Add a player to the game.
 	 * 
 	 * @param player The player to add to the game.
-	 * @requires The number of added Players must not exceed the limit specified
-	 *           by the Game Mode.
+	 * @requires The number of added Players must not exceed the Player limit
+	 *           and must match the player types specified by the Game Mode
 	 * @throws InvalidStateException (unchecked) if limit of players for this game mode is
-	 *         already met.
+	 *         already met, or the Player types do not match the required types.
 	 */
-	public void addPlayer(Player player){}
+	public void addPlayer(Player player) {
+	}
 
 	/**
 	 * Save the current state of the game
@@ -122,6 +123,31 @@ public class Game {
 	 * @effects The Game state is written to fileName.
 	 */
 	void save(String fileName) throws IOException {}
+	
+	/**
+	 * Clear the Board, reset the Player positions,
+	 * and replay the game if it was loaded from a file.
+	 * 
+	 * @modifies Board state, Player positions.
+	 * @effects Sets the initial state to make the game ready to play,
+	 *          and simulates all loaded plays.
+	 */
+	public void begin() {
+	    Boolean doReplay = true;
+	    this.begin(doReplay);
+	}
+	
+	/**
+     * Clear the Board, reset the Player positions,
+     * and optionally replay the game if it was loaded from a file.
+     * 
+     * @param replay Choose whether to simulate the play of a loaded
+     *        game or begin immediately from loaded state.
+     * @modifies Board state, Player positions.
+     * @effects Sets the initial state to make the game ready to play,
+     *          and optionally simulates all loaded plays.
+     */
+    public void begin(Boolean replay) {}
 	
 	/**
 	 * Opens an already saved game specified by fileName. 
