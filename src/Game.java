@@ -112,6 +112,16 @@ public class Game {
 	 */
 	public void addPlayer(Player player) {
 	}
+	
+	/**
+	 * Get the Player for the current turn.
+	 * 
+	 * @requires The game is in a playable state.
+	 * @throws InvalidStateException (unchecked) if the game is not playable
+	 *         (uninitialized or finished).
+	 * @return The Player that will move next.
+	 */
+	public void getCurrentPlayer() {} // TODO: can I get rid of this?
 
 	/**
 	 * Save the current state of the game
