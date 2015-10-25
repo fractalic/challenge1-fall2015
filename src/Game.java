@@ -35,6 +35,26 @@ public class Game {
 
 	public Game(){}
 	
+	/*
+	 * API
+	 * - save
+	 * - open
+	 * - playback
+	 * - check if playing back
+	 * - make a move
+	 * - check who's turn it is
+	 * -check the current mode
+	 * - check if game finished
+	 * - check who won
+	 * - set playback speed ?
+	 * I don't know what set board and set player are. That would expose
+	 * the internal representation.
+	 * 
+	 * I'll need to implement my own callbacks for replay mode.
+	 * 
+	 * Private
+	 */
+	
 	/* Mode is one of SINGLE_PLAYER, TWO_PLAYER, RESUME and MOVIE */
 	public Game(Mode mode){}
 	public Mode getMode(){ return null; }
