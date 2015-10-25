@@ -8,5 +8,11 @@ public class BoardTest {
     public void construct() {
         Board testBoard = new Board(7);
     }
+    
+    @Test
+    public void getAvailableDirectionsAtTrivial() {
+        Board testBoard = new Board(7);
+        //Board.get
+    }
 
 }

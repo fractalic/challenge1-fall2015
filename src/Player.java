@@ -52,7 +52,7 @@ public class Player {
 	 * 
 	 * @return The current location of the Player on the board.
 	 */
-	public Location getLocation(){ return new Location();}
+	public Location getLocation(){ return new Location(0,0);}
 	
 	/**
 	 * Place the Player on the board.
