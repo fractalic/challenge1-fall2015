@@ -51,9 +51,9 @@ public class Location {
      */
     public Location(int x, int y) {
         this.isConstrained = false;
-        this.set(x, y);
         this.min = Integer.MIN_VALUE;
         this.max = Integer.MAX_VALUE;
+        this.set(x, y);
     }
     
     /**
@@ -69,13 +69,10 @@ public class Location {
      * @return A constrained location, at the specified coordinates.
      */
     public Location(int x, int y, int min, int max) {
-        if ((x < min) || (x > max) || (y < min) || (y > max)) {
-            throw new LocationOutOfBoundsException("Cannot create Location.");
-        }
-        this.set(x, y);
-        this.isConstrained = false;
+        this.isConstrained = true;
         this.min = min;
         this.max = max;
+        this.set(x, y);
     }
     
     /**
