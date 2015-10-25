@@ -1,6 +1,16 @@
+/**
+ * Represents a player in the game.
+ * Player's can be placed at arbitrary locations, including outside the bounds
+ * of the board.
+ * 
+ * @author ben
+ * @invariant Once set, the Player's location is always defined.
+ * @invariant The Player's name is never undefined.
+ * @invariant The Player's type is never undefined.
+ *
+ */
 public class Player {
-    
-	
+
 	public enum Type {
 	    HUMAN(0, "Human player."),
         BOT(1, "Bot with no intelligence."),
@@ -26,6 +36,10 @@ public class Player {
 
 	}
 	
+	private Location location;
+	private final String name;
+	private final Player.Type type;
+	
 	/*
 	 * API
 	 * I think I want to get rid of the blank constructors.
@@ -45,14 +59,28 @@ public class Player {
 	 * @param type The type of the Player.
 	 * @return an unplaced Player.
 	 */
-	public Player(final String name, final Player.Type type){}
+	public Player(final String name, final Player.Type type){
+	    this.name = name;
+	    this.type = type;
+	}
 
 	/**
 	 * Get the location of the Player on the board.
 	 * 
+	 * @throws InvalidStateException (unchecked) if the Player's location
+	 *         has not yet been set.
 	 * @return The current location of the Player on the board.
 	 */
-	public Location getLocation(){ return new Location(0,0);}
+	public Location getLocation() { 
+	    if (this.location == null) {
+	        throw new InvalidStateException("Player's location has not been set.");
+	    }
+
+	    return new Location(location.getCoordinate(Location.Coordinate.FIRST),
+	                        location.getCoordinate(Location.Coordinate.SECOND),
+	                        location.getConstraintMin(),
+	                        location.getConstraintMax() );
+	}
 	
 	/**
 	 * Place the Player on the board.
@@ -64,7 +92,10 @@ public class Player {
 	 * @effects The Player updates its location to the given value.
 	 * @modifies Player's location.
 	 */
-	public void setLocation(final Location location) { }
+	public void setLocation(final Location location) {
+	    this.location.set(location.getCoordinate(Location.Coordinate.FIRST),
+	                      location.getCoordinate(Location.Coordinate.SECOND) );
+	}
 	
 	//public boolean moveTo(Direction direction){ return false; }	
 	//public Location getOpponentLocation(){ return new Location(); }
