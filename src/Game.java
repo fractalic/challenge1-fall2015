@@ -53,25 +53,82 @@ public class Game {
 	 * I'll need to implement my own callbacks for replay mode.
 	 * 
 	 * Private
+	 * -
 	 */
 	
-	/* Mode is one of SINGLE_PLAYER, TWO_PLAYER, RESUME and MOVIE */
+	/**
+	 * Create a new Game with given Mode.
+	 * Call open() to load a previous game
+	 * or begin() to begin a new Game.
+	 * 
+	 * @param mode The Game mode, which sets the number of players.
+	 * @requires mode is not null.
+	 * @modifies none
+	 * @return an empty Game in an unplayable state.
+	 */
 	public Game(Mode mode){}
+	
+	/**
+	 * Return the current mode of the Game.
+	 * 
+	 * @return The current mode of the Game, dictating the number of players.
+	 */
 	public Mode getMode(){ return null; }
 
-	public boolean isGameFinished(){ return false; }
+	/**
+	 * Check if the current Game is finished, which occurs
+	 * when one player is guaranteed win no matter what moves either player makes.
+	 * 
+	 * @return true if one player is guaranteed to win.
+	 */
+	public boolean isFinished(){ return false; }
+	
+	/**
+	 * Return the winning Player.
+	 * 
+	 * @requires The game must be finished, as determined by isFinished().
+	 * @throws InvalidStateException (unchecked) if game has not finished.
+	 * @return A copy of the winning Player.
+	 */
 	public Player getWinner(){ return null; }
-	public void setBoard(Board board){}
-	public void setPlayer(Player player){}
+	
+	/**
+	 * Add a board to the game.
+	 * 
+	 * @param board The board to be added to the game.
+	 * @requires No boards have been added to the game.
+	 * @throws InvalidStateException (unchecked) if the game already has an associated Board.
+	 */
+	public void addBoard(Board board){}
+	
+	/**
+	 * Add a player to the game.
+	 * 
+	 * @param player The player to add to the game.
+	 * @requires The number of added Players must not exceed the limit specified
+	 *           by the Game Mode.
+	 * @throws InvalidStateException (unchecked) if limit of players for this game mode is
+	 *         already met.
+	 */
+	public void addPlayer(Player player){}
 
-	void save(){}
+	/**
+	 * Save the current state of the game
+	 * 
+	 * @param fileName The file name in which to save the game state.
+	 * @requires The game is in a playable or finished state.
+	 * @throws InvalidStateException (unchecked) if the game is not
+	 *         finished and is not playable.
+	 * @effects The Game state is written to fileName.
+	 */
+	void save(String fileName) throws IOException {}
 	
 	/**
 	 * Opens an already saved game specified by fileName. 
 	 * Parses the file specified by fileName. If fileName is a valid 
 	 * game, it initializes a game and simulates it up to the last 
 	 * move specified in the file.
-	 * @param  fileName: an absolute path to the game file to be opened 
+	 * @param  fileName an absolute path to the game file to be opened 
 	 * @return true if file is valid game and opened successfully, 
 	 * 		   false otherwise 
 	 */
