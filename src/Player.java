@@ -9,14 +9,12 @@ import java.awt.event.ActionListener;
  * @author ben
  * @invariant Once set, the Player's location is always defined.
  * @invariant The Player's name is never undefined.
+ * @invariant The Player's name never changes.
  * @invariant The Player's type is never undefined.
- * @invariant The sharedID can be used to identify two player objects
- *            that are intended to represent the same player, even when
- *            the names, types, and locations have become desynchronised.
- *            This allows functions to return player clones, preventing
- *            unauthorized changes. It is the responsibility of the clone
- *            receiver to synchronize any of its local players with the
- *            appropriate clone.
+ * @invariant The Player's type never changes.
+ * @invariant The Player's unique-ID never changes.
+ * @invariant The shared-ID is copied to any cloned Players. This allows clone
+ *            receivers to match a returned Player clone to a local Player.
  *
  */
 public class Player {
