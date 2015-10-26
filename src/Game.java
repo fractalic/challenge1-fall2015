@@ -45,6 +45,8 @@ public class Game {
 	
 	private List<Player> players;
 	
+	private List<PlayerMoveListener> playerMoveListeners = new ArrayList<PlayerMoveListener>();
+	
 	/**
 	 * Create a new Game with given Mode.
 	 * Call open() to load a previous game
@@ -94,8 +96,13 @@ public class Game {
 	                  "Cannot move to requested location: " +
 	                  destination.toString());
 	    }
+	    
+	    Location previousLocation = currentPlayer.getLocation();
+	    
 	    currentPlayer.setLocation(destination);
 	    board.setStateAt(destination, Board.LocationState.UNAVAILABLE);
+	    
+	    this.notifyPlayerMoveListeners(previousLocation, currentPlayer);
 	    
 	    nextPlayer();
 	}
@@ -293,6 +300,25 @@ public class Game {
 			/* … */
 		}
 		scanner.close();
+	}
+	
+	/**
+	 * Subscribe to player position updates.
+	 * 
+	 * @param listener Function to receive updates about player movements.
+	 */
+	public void addPlayerMoveListener(PlayerMoveListener listener) {
+	    playerMoveListeners.add(listener);
+	}
+	
+	/**
+	 * Notify all listeners subscribed to player movement.
+	 */
+	public void notifyPlayerMoveListeners(Location previousLocation, Player player) {
+	    for (PlayerMoveListener listener : playerMoveListeners) {
+	        listener.playerMovePerformed(previousLocation, player);
+	    }
+	    // TODO: call this somewhere.
 	}
 	
 	/*

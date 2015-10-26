@@ -133,6 +133,23 @@ public class BoardFrame extends JFrame{
             game.addPlayer(newPlayer);
         }
         game.begin();
+        game.addPlayerMoveListener(new PlayerMoveListener() {
+            public void playerMovePerformed(Location oldLocation, Player player) {
+                updatePlayer(oldLocation, player);
+            }
+        });
+	}
+	
+	/**
+	 * Redraw player whenever it moves.
+	 * 
+	 * @param oldLocation The Player's location before movement.
+	 * @param player The player object which moved
+	 *        (containing its new location).
+	 * 
+	 */
+	private void updatePlayer(Location oldLocation, Player player) {
+	    System.out.println("Player moved: " + oldLocation.toString() + " to " + player.getLocation().toString());
 	}
 
 	/**
