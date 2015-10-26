@@ -48,6 +48,7 @@ public class PlayerTest {
         Player player2 = player1.clone();
         
         assertTrue(player1.getID() != player2.getID());
+        assertEquals(player1.getSharedID(), player2.getSharedID());
         
         assertEquals(player1.getLocation(), player2.getLocation());
         assertEquals(player1.getName(), player2.getName());

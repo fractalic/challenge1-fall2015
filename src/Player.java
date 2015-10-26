@@ -10,6 +10,13 @@ import java.awt.event.ActionListener;
  * @invariant Once set, the Player's location is always defined.
  * @invariant The Player's name is never undefined.
  * @invariant The Player's type is never undefined.
+ * @invariant The sharedID can be used to identify two player objects
+ *            that are intended to represent the same player, even when
+ *            the names, types, and locations have become desynchronised.
+ *            This allows functions to return player clones, preventing
+ *            unauthorized changes. It is the responsibility of the clone
+ *            receiver to synchronize any of its local players with the
+ *            appropriate clone.
  *
  */
 public class Player {
@@ -39,24 +46,12 @@ public class Player {
 
 	}
 	
-	private static int        ID = 1;
-	private final int         id;
+	private static int        NEXT_UNIQUE_ID = 1;
+	private final int         uniqueID;
+	private int               sharedID;
 	private Location          location;
 	private final String      name;
 	private final Player.Type type;
-	
-	/*
-	 * API
-	 * I think I want to get rid of the blank constructors.
-	 * 
-	 * I want to get rid of getOpponentLocation because that is not scalable.
-	 * I think I want to store the player location on the player, because that
-	 * makes it easy to pass to another level.
-	 * 
-	 * I think I'll set the location directly instead of using moveTo
-	 */
-	//public Player(){}
-	//public Player(PlayerType type){}
 	
 	/**
 	 * Create a Player of a given type with a given name.
@@ -68,8 +63,9 @@ public class Player {
 	    this.name = name;
 	    this.type = type;
 	    
-	    this.id = ID;
-	    ID++;
+	    this.uniqueID = NEXT_UNIQUE_ID;
+	    this.sharedID = this.uniqueID;
+	    NEXT_UNIQUE_ID++;
 	}
 	
     /**
@@ -77,14 +73,15 @@ public class Player {
      * 
      * @throws InvalidStateException (unchecked) If this Player's
      *         location has not been set.
-     * @return A copy of the player with same name, type and location
-     *         but distinct ID.
+     * @return A copy of the player with same shared-ID, name, type and location
+     *         but distinct unique-ID.
      */
     public Player clone() {
         if (this.location == null) {
             throw new InvalidStateException("Cannot clone player.");
         }
         Player clonedPlayer = new Player(this.name, this.type);
+        clonedPlayer.sharedID = this.sharedID;
         clonedPlayer.setLocation(this.location);
         return clonedPlayer;
     }
@@ -95,7 +92,16 @@ public class Player {
      * @return The unique id of this Player.
      */
     public int getID() {
-        return this.id;
+        return this.uniqueID;
+    }
+    
+    /**
+     * Get the shared ID of this Player.
+     * The shared ID can be used to determine if two players represent
+     * the same data, while preventing internal representation exposure.
+     */
+    public int getSharedID() {
+        return this.sharedID;
     }
 
 	/**
@@ -145,7 +151,18 @@ public class Player {
 	    return this.type;
 	}
 	
-	
+	/*
+     * API
+     * I think I want to get rid of the blank constructors.
+     * 
+     * I want to get rid of getOpponentLocation because that is not scalable.
+     * I think I want to store the player location on the player, because that
+     * makes it easy to pass to another level.
+     * 
+     * I think I'll set the location directly instead of using moveTo
+     */
+    //public Player(){}
+    //public Player(PlayerType type){}
 	//public boolean moveTo(Direction direction){ return false; }	
 	//public Location getOpponentLocation(){ return new Location(); }
 }
