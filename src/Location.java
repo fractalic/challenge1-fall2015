@@ -79,7 +79,7 @@ public class Location {
      *         the bounds of the old one.
      * @return A new location offset by some (x,y) distance from this.
      */
-    public Location cloneOffset(int plusX, int plusY) {
+    public Location cloneOffset(final int plusX, final int plusY) {
         return new Location(this.x + plusX, this.y + plusY, this.max);
     }
     
@@ -105,6 +105,21 @@ public class Location {
         } else {
             return this.y;
         }
+    }
+    
+    /**
+     * Determine if two locations are equal.
+     * @param that The location to compare against this.
+     * @return true if both locations have the same coordinates and upper bound.
+     *         false otherwise.
+     */
+    @Override
+    public boolean equals(Object that) {
+        Location location = (Location) that;
+        if ((this.x == location.x) && (this.y == location.y) && (this.max == location.max)) {
+            return true;
+        }
+        return true;
     }
 
 }

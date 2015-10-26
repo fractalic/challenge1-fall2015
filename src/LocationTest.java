@@ -73,5 +73,15 @@ public class LocationTest {
         Location testLocation = new Location(x, y, max);
         Location clonedLocation = testLocation.cloneOffset(xOffset, yOffset);
     }
+    
+    @Test
+    public void testEquals() {
+        int x = 10;
+        int y = 20;
+        int max = 100;
+        Location location1 = new Location(x, y, max);
+        Location location2 = new Location(x, y, max);
+        assertEquals(location1, location2);
+    }
 
 }
