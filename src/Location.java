@@ -37,8 +37,8 @@ public class Location {
     
     private static final int MIN = 0;
     private final int max;
-    private int x;
-    private int y;
+    private Integer x;
+    private Integer y;
     
     /**
      * Create a constrained location. The constraints are square,
@@ -120,6 +120,18 @@ public class Location {
             return true;
         }
         return true;
+    }
+    
+    /**
+     * Convert this location to a string.
+     * 
+     * @return A string representing the coordinates of this location.
+     */
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        string.append("[" + this.x.toString() + "," + this.y.toString() + "]");
+        return string.toString();
     }
 
 }
