@@ -96,6 +96,8 @@ public class Game {
 	    }
 	    currentPlayer.setLocation(destination);
 	    board.setStateAt(destination, Board.LocationState.UNAVAILABLE);
+	    
+	    nextPlayer();
 	}
 	
 	/**
@@ -241,11 +243,11 @@ public class Game {
         ready = true;
         currentPlayerIndex = 0;
         nextPlayer();
-        this.moveTo(new Location(board.getDimension() / 2,
+        currentPlayer.setLocation(new Location(board.getDimension() / 2,
                                  board.getDimension() - 1,
                                  board.getDimension() - 1) );
         nextPlayer();
-        this.moveTo(new Location(board.getDimension() / 2,
+        currentPlayer.setLocation(new Location(board.getDimension() / 2,
                                  0,
                                  board.getDimension() - 1) );
         nextPlayer();
@@ -261,7 +263,9 @@ public class Game {
      */
     private void nextPlayer() {
         currentPlayer = players.get(currentPlayerIndex);
-        currentPlayerIndex = (currentPlayerIndex++) % players.size();
+        currentPlayerIndex = (++currentPlayerIndex) % players.size();
+        System.out.println(currentPlayerIndex);
+        System.out.println(players.size());
     }
 	
 	/**
