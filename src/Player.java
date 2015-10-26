@@ -68,21 +68,18 @@ public class Player {
 	}
 	
     /**
-     * Create a copy of the player, if its location has been set.
+     * Create a copy of the player.
      * 
-     * @throws InvalidStateException (unchecked) If this Player's
-     *         location has not been set.
      * @return A copy of the player with same shared-ID, name, type and location
      *         but distinct unique-ID.
      */
 	@Override
     public Player clone() {
-        if (this.location == null) {
-            throw new InvalidStateException("Cannot clone player.");
-        }
         Player clonedPlayer = new Player(this.name, this.type);
+        if (this.location != null) {
+            clonedPlayer.setLocation(this.location);
+        }
         clonedPlayer.sharedID = this.sharedID;
-        clonedPlayer.setLocation(this.location);
         return clonedPlayer;
     }
     

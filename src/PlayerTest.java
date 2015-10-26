@@ -35,12 +35,6 @@ public class PlayerTest {
         assertEquals(testLocation,testPlayer.getLocation());
     }
     
-    @Test(expected = InvalidStateException.class)
-    public void testCloneInvalid() {
-        Player player1 = new Player("ben", Player.Type.BOT);
-        Player player2 = player1.clone();
-    }
-    
     @Test
     public void testCloneAndID() {
         Player player1 = new Player("ben", Player.Type.BOT);
