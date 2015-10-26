@@ -8,9 +8,9 @@ public class Game {
 	
 	public enum Mode {
 		
-		TWO_PLAYER(0, "Two Player"),
-		ONE_PLAYER(1, "One Player"),
-		BOT_BATTLE(2, "Bot Battle");
+		TWO_PLAYER(0, "TWO_PLAYER"),
+		ONE_PLAYER(1, "ONE_PLAYER"),
+		BOT_BATTLE(2, "BOT_BATTLE");
 		
 
 	    private final String text;

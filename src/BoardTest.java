@@ -122,5 +122,37 @@ public class BoardTest {
         assertTrue(directions.contains(Direction.WEST));
         
     }
+    
+    @Test
+    public void testSerialize() {
+        Board testBoard = new Board(7);
+        Location initialLocation = new Location(0,0,6);
+        
+        Location testLocation = initialLocation.cloneOffset(2, 6);
+        testBoard.setStateAt(testLocation, Board.LocationState.UNAVAILABLE);
+        
+        testLocation = initialLocation.cloneOffset(3, 0);
+        testBoard.setStateAt(testLocation, Board.LocationState.UNAVAILABLE);
+        
+        testLocation = initialLocation.cloneOffset(3, 6);
+        testBoard.setStateAt(testLocation, Board.LocationState.UNAVAILABLE);
+        
+        testLocation = initialLocation.cloneOffset(3, 1);
+        testBoard.setStateAt(testLocation, Board.LocationState.UNAVAILABLE);
+        
+        testLocation = initialLocation.cloneOffset(3, 5);
+        testBoard.setStateAt(testLocation, Board.LocationState.UNAVAILABLE);
+        
+        testLocation = initialLocation.cloneOffset(2, 1);
+        testBoard.setStateAt(testLocation, Board.LocationState.UNAVAILABLE);
+        
+        testLocation = initialLocation.cloneOffset(3, 6);
+        testBoard.setStateAt(testLocation, Board.LocationState.UNAVAILABLE);
+        
+        testLocation = initialLocation.cloneOffset(1, 1);
+        testBoard.setStateAt(testLocation, Board.LocationState.UNAVAILABLE);
+        
+        System.out.println(testBoard.serialize(Game.Mode.ONE_PLAYER));
+    }
 
 }

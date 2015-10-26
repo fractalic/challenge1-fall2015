@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Board {
     
@@ -29,9 +31,10 @@ public class Board {
 
     }
     
-    private final int dimension;
+    private final Integer dimension;
     private final int[][] adjacency;
     private final LocationState[][] availability;
+    private List<Location> changeLog;
 	
     /**
      * Create an empty square Board with size
@@ -53,6 +56,8 @@ public class Board {
 	    
 	    this.availability = new LocationState[dimension][dimension];
         initializeAvailability();
+        
+        changeLog = new ArrayList<Location>();
 	}
 
 	/**
@@ -74,6 +79,10 @@ public class Board {
 	    int y = location.getCoordinate(Location.Coordinate.SECOND);
 	    
 	    availability[x][y] = state;
+	    
+	    if (state == LocationState.UNAVAILABLE) {
+	        changeLog.add(location.clone());
+	    }
 	}
 	
 	/**
@@ -167,9 +176,7 @@ public class Board {
         }
         */
         return directions;
-	}	
-	
-	public String serialize(){ return null; }
+	}
 	
 	/**
 	 * Initialize the adjacency matrix so that all locations that can be reached
@@ -213,6 +220,53 @@ public class Board {
 	        }
 	    }
 	}
+
+    /**
+     * Produce a formatted string indicating board properties
+     * and all moves that have occurred.
+     * 
+     * @param The current mode of the game.
+     * @return A formatted string as described.
+     */
+    public String serialize(Game.Mode mode){
+        StringBuilder serialized = new StringBuilder();
+        serialized.append("START_CONFIG\n");
+        serialized.append("\tDIMENSION: " + dimension.toString() + "\n");
+        serialized.append("\tMODE     : " + mode.toString() + "\n");
+        serialized.append("START_CONFIG\n\n");
+        
+        int first = 1;
+        int player = 1;
+        Location lastLocation = new Location(0,0,1);
+        
+        for (Location change : changeLog) {
+            if (first == 1) {
+                lastLocation = change;
+                first = 0;
+                player = 2;
+            } else {
+                if (player == 2) {
+                    serialized.append("START_BOARD\n");
+                    serialized.append("\tP1_LOCATION: " + lastLocation.toString() + "\n");
+                    serialized.append("\tP2_LOCATION: " + change.toString() + "\n");
+                    serialized.append("END_BOARD\n\n");
+                    
+                    player = 1;
+                } else {
+                    serialized.append("START_BOARD\n");
+                    serialized.append("\tP1_LOCATION: " + change.toString() + "\n");
+                    serialized.append("\tP2_LOCATION: " + lastLocation.toString() + "\n");
+                    serialized.append("END_BOARD\n\n");
+                    
+                    player = 2;
+                }
+
+                lastLocation = change;
+            }
+        }
+        
+        return serialized.toString();
+    }
 	
 	/**
 	 * Determine all the locations which are reachable from this location on
