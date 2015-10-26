@@ -6,22 +6,20 @@ public class LocationTest {
 
     @Test
     public void construct() {
-        Location unconstrainedLocation = new Location(10,20);
-        Location constrainedLocation = new Location(3,4,0,8);
+        Location constrainedLocation = new Location(3,4,8);
     }
     
     @Test(expected = LocationOutOfBoundsException.class)
     public void constructOutOfBoundsLow() {
-        Location badlyConstrainedLocation = new Location(10, 20, 11, 100);
+        Location badlyConstrainedLocation = new Location(10, 20, 11);
     }
     
     @Test
     public void getLocation() {
         int x = 10;
         int y = 20;
-        int min = 1;
         int max = 100;
-        Location constrainedLocation = new Location(x, y, min, max);
+        Location constrainedLocation = new Location(x, y, max);
         assertEquals(x,constrainedLocation.getCoordinate(Location.Coordinate.FIRST));
         assertEquals(y, constrainedLocation.getCoordinate(Location.Coordinate.SECOND));
     }
@@ -30,48 +28,50 @@ public class LocationTest {
     public void getConstraints() {
         int x = 10;
         int y = 20;
-        int min = 1;
         int max = 100;
-        Location constrainedLocation = new Location(x, y, min, max);
-        assertEquals(true, constrainedLocation.isConstrained());
-        assertEquals(max,constrainedLocation.getConstraintMax());
-        assertEquals(min, constrainedLocation.getConstraintMin());
+        Location constrainedLocation = new Location(x, y, max);
+        assertEquals(max,constrainedLocation.getUpperBound());
     }
     
     @Test
-    public void setLocation() {
+    public void testClone() {
         int x = 10;
-        int setX = 15;
-        int setY = 25;
-        int y = 20;
-        int min = 1;
-        int max = 100;
-        Location constrainedLocation = new Location(x, y, min, max);
-        assertEquals(true, constrainedLocation.isConstrained());
-        
-        assertEquals(x,constrainedLocation.getCoordinate(Location.Coordinate.FIRST));
-        assertEquals(y, constrainedLocation.getCoordinate(Location.Coordinate.SECOND));
-        
-        constrainedLocation.set(setX, setY);
-        assertEquals(setX,constrainedLocation.getCoordinate(Location.Coordinate.FIRST));
-        assertEquals(setY, constrainedLocation.getCoordinate(Location.Coordinate.SECOND));
+        int y = 7;
+        int max = 15;
+        Location testLocation = new Location(x, y, max);
+        Location clonedLocation = testLocation.clone();
+        assertEquals(testLocation.getUpperBound(), clonedLocation.getUpperBound());
+        assertEquals(testLocation.getCoordinate(Location.Coordinate.FIRST),
+                     clonedLocation.getCoordinate(Location.Coordinate.FIRST));
+        assertEquals(testLocation.getCoordinate(Location.Coordinate.SECOND),
+                clonedLocation.getCoordinate(Location.Coordinate.SECOND));
+    }
+    
+    @Test
+    public void testCloneOffset() {
+        int x = 1;
+        int xOffset = 3;
+        int y = 2;
+        int yOffset = 7;
+        int max = 15;
+        Location testLocation = new Location(x, y, max);
+        Location clonedLocation = testLocation.cloneOffset(xOffset, yOffset);
+        assertEquals(testLocation.getUpperBound(), clonedLocation.getUpperBound());
+        assertEquals(testLocation.getCoordinate(Location.Coordinate.FIRST) + xOffset,
+                     clonedLocation.getCoordinate(Location.Coordinate.FIRST));
+        assertEquals(testLocation.getCoordinate(Location.Coordinate.SECOND) + yOffset,
+                clonedLocation.getCoordinate(Location.Coordinate.SECOND));
     }
     
     @Test(expected = LocationOutOfBoundsException.class)
-    public void setOutOfBoundsLocation() {
-        int x = 10;
-        int setX = 15;
-        int y = 20;
-        int setY = 25;
-        int min = 1;
-        int max = 22;
-        Location constrainedLocation = new Location(x, y, min, max);
-        assertEquals(true, constrainedLocation.isConstrained());
-        
-        assertEquals(x,constrainedLocation.getCoordinate(Location.Coordinate.FIRST));
-        assertEquals(y, constrainedLocation.getCoordinate(Location.Coordinate.SECOND));
-        
-        constrainedLocation.set(setX, setY);
+    public void testOutOfBoundsCloneOffset() {
+        int x = 1;
+        int xOffset = 3;
+        int y = 2;
+        int yOffset = 7;
+        int max = 8;
+        Location testLocation = new Location(x, y, max);
+        Location clonedLocation = testLocation.cloneOffset(xOffset, yOffset);
     }
 
 }

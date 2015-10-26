@@ -66,8 +66,8 @@ public class Location {
      * @param location The Location to be copied.
      * @return A copy of the given Location.
      */
-    public Location clone(Location location) {
-        return new Location(location.x, location.y, location.max);
+    public Location clone() {
+        return new Location(this.x, this.y, this.max);
     }
     
     /**
