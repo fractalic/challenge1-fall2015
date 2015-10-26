@@ -3,9 +3,35 @@ import java.util.List;
 
 public class Board {
     
+    public enum LocationState {
+        
+        AVAILABLE(0, "available"),
+        UNAVAILABLE(1, "unavailable");
+        //OCCUPIED(2, "occupied"); //unnecessary I think.
+        
+
+        private final int ID;
+        private final String text;
+
+
+        private LocationState(final int ID, final String text) {
+            this.ID = ID;
+            this.text = text;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Enum#toString()
+         */
+        @Override
+        public String toString() {
+            return this.text;
+        }
+
+    }
+    
     private final int dimension;
     private final int[][] adjacency;
-    private final int[][] occupation;
+    private final LocationState[][] availability;
 	
     /**
      * Create an empty square Board with size
@@ -21,19 +47,103 @@ public class Board {
              InvalidStateException("Cannot create board with given dimension.");
         }
 	    this.dimension = dimension;
+	    
 	    this.adjacency = new int[dimension*dimension][dimension*dimension];
-	    initializeAdjacency();
-	    this.occupation = new int[dimension][dimension];
+	    // initializeAdjacency();
+	    
+	    this.availability = new LocationState[dimension][dimension];
+        initializeAvailability();
 	}
 
-	/* direction is one of North, South, East and West. */
-	List<Direction> getAvailableDirectionsAt(final Location location) {
-	    final int x = location.getCoordinate(Location.Coordinate.FIRST);
-	    final int y = location.getCoordinate(Location.Coordinate.SECOND);
+	/**
+	 * Set the state of a given location.
+	 * 
+	 * @requires location must be constrained to dimension - 1.
+	 * @param location The location to modify.
+	 * @param state The state to associate with this location.
+	 * @modifies State of the given location.
+	 * @throws InvalidStateException (unchecked) if location
+	 *         is constrained to anything other than dimension - 1.
+	 */
+	public void setStateAt(final Location location, final LocationState state) {
+	    if (location.getUpperBound() != dimension - 1) {
+	        throw new InvalidStateException("Invalid location for this board.");
+	    }
+	    
+	    int x = location.getCoordinate(Location.Coordinate.FIRST);
+	    int y = location.getCoordinate(Location.Coordinate.SECOND);
+	    
+	    availability[x][y] = state;
+	}
+	
+	/**
+	 * Get the state of a given location.
+	 * 
+	 * @requires location must be constrained to dimension - 1.
+     * @param location The location to modify.
+     * @modifies State of the given location.
+     * @throws InvalidStateException (unchecked) if location
+     *         is constrained to anything other than dimension - 1. 
+     * @return The state of this location.
+	 */
+	public LocationState getStateAt(final Location location) {
+	    if (location.getUpperBound() != dimension - 1) {
+            throw new InvalidStateException("Invalid location for this board.");
+        }
+	    
+	    int x = location.getCoordinate(Location.Coordinate.FIRST);
+        int y = location.getCoordinate(Location.Coordinate.SECOND);
+        
+        return availability[x][y];
+	}
+	
+	/**
+	 * Get all the acceptable movement directions for a particular location.
+	 * 
+	 * @requires location must be constrained to dimension - 1.
+	 * @param location The location to check for possible movements.
+	 * @return A list of all directions in which it is possible to move
+	 *         from this location.
+	 * @throws InvalidStateException (unchecked) if location
+     *         is constrained to anything other than dimension - 1.
+	 */
+	public List<Direction> getAvailableDirectionsAt(final Location location) {
+	    if (location.getUpperBound() != dimension - 1) {
+            throw new InvalidStateException("Invalid location for this board.");
+        }
+	    
+	    final int xSource = location.getCoordinate(Location.Coordinate.FIRST);
+	    final int ySource = location.getCoordinate(Location.Coordinate.SECOND);
+        List<Direction> directions = new ArrayList<Direction>();
+        int xDest;
+        int yDest;
+        
+        if ((yDest = ySource + 1) < dimension) {
+            if (availability[xSource][yDest] == LocationState.AVAILABLE) {
+                directions.add(Direction.NORTH);
+            }
+        }
+        if ((yDest = ySource - 1) >= 0) {
+            if (availability[xSource][yDest] == LocationState.AVAILABLE) {
+                directions.add(Direction.SOUTH);
+            }
+        }
+        if ((xDest = xSource + 1) < dimension) {
+            if (availability[xDest][ySource] == LocationState.AVAILABLE) {
+                directions.add(Direction.EAST);
+            }
+        }
+        if ((xDest = xSource - 1) >= 0) {
+            if (availability[xDest][ySource] == LocationState.AVAILABLE) {
+                directions.add(Direction.WEST);
+            }
+        }
+        
+        
+        /*
 	    final int dimensionSquared = dimension*dimension;
 	    final int adjacencySourceIndex = x + (y * dimension);
 	    int adjacencyDestIndex;
-	    List<Direction> directions = new ArrayList<Direction>();
 	    
         if ((adjacencyDestIndex = adjacencySourceIndex + dimension) < dimensionSquared) {
             if (adjacency[adjacencyDestIndex][adjacencySourceIndex] == 1) {
@@ -55,7 +165,7 @@ public class Board {
                 directions.add(Direction.WEST);
             }
         }
-        
+        */
         return directions;
 	}	
 	
@@ -89,6 +199,33 @@ public class Board {
 	    }
 	    
 	}
+	
+	/**
+	 * Initialize the availability matrix, marking all locations as available.
+	 * 
+	 * @modifies availability
+	 * @result All locations are marked as available.
+	 */
+	private void initializeAvailability() {
+	    for (int x = 0; x < dimension; x++) {
+	        for (int y = 0; y < dimension; y++) {
+	            availability[x][y] = LocationState.AVAILABLE;
+	        }
+	    }
+	}
+	
+	/**
+	 * Determine all the locations which are reachable from this location on
+	 * the game board, disregarding current availability of the destination.
+	 * 
+	 * @param source The initial location.
+	 * @return All indices such that
+	 */
+	/*
+	private List<int> getDestinationIndices(final Location source) {
+	    
+	}
+	*/
 	
 	/* API
 	 * - check if location available
