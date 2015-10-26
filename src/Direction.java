@@ -4,7 +4,8 @@ public enum Direction {
     NORTH(0, "North/Up"),
     SOUTH(1, "South/Down"),
     EAST(2, "East/Right"),
-    WEST(3, "West/Down");
+    WEST(3, "West/Down"),
+    NOT_A_DIRECTION(4, "Not a direction");
     
 
     private final int ID;

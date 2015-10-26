@@ -92,5 +92,35 @@ public class LocationTest {
         Location location1 = new Location(x, y, max);
         assertEquals("[10,20]", location1.toString());
     }
+    
+    @Test
+    public void testToDirection() {
+        int x = 10;
+        int y = 20;
+        int max = 100;
+        Location location1 = new Location(x, y, max);
+        Location location2 = new Location(x+1, y, max);
+        assertEquals(Direction.EAST, location1.getDirectionTo(location2));
+    }
+    
+    @Test
+    public void testToDirectionNull() {
+        int x = 10;
+        int y = 20;
+        int max = 100;
+        Location location1 = new Location(x, y, max);
+        Location location2 = new Location(x+1, y+1, max);
+        assertTrue(location1.getDirectionTo(location2) == Direction.NOT_A_DIRECTION);
+    }
+    
+    @Test(expected = LocationOutOfBoundsException.class)
+    public void testToDirectionOutOfBounds() {
+        int x = 10;
+        int y = 20;
+        int max = 100;
+        Location location1 = new Location(x, y, max);
+        Location location2 = new Location(x, y, max+1);
+        location1.getDirectionTo(location2);
+    }
 
 }

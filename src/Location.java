@@ -108,6 +108,43 @@ public class Location {
     }
     
     /**
+     * Convert the given location to its equivalent direction from
+     * this location.
+     * 
+     * @requires that has the same upper bound and this.
+     * @param that The location to convert to a direction.
+     * @return The direction that can be added to this location once
+     *         to produce that. Direction.NOT_A_DIRECTION if that cannot
+     *         be produced from this.
+     * @throws LocationOutOfBoundsException (unchecked) if that has a different
+     *         upper bound than this.
+     */
+    public Direction getDirectionTo(final Location that) {
+        if (this.max != that.max) {
+            throw new LocationOutOfBoundsException();
+        }
+        
+        if (this.x != that.x && this.y != that.y) {
+            return Direction.NOT_A_DIRECTION;
+        }
+
+        if (that.y == this.y + 1) {
+            return Direction.NORTH;
+        }
+        if (that.y == this.y - 1) {
+            return Direction.SOUTH;
+        }
+        if (that.x == this.x + 1) {
+            return Direction.EAST;
+        }
+        if (that.x == this.x - 1) {
+            return Direction.WEST;
+        }
+        
+        return Direction.NOT_A_DIRECTION;
+    }
+    
+    /**
      * Determine if two locations are equal.
      * @param that The location to compare against this.
      * @return true if both locations have the same coordinates and upper bound.
