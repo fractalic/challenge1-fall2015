@@ -75,6 +75,7 @@ public class Player {
      * @return A copy of the player with same shared-ID, name, type and location
      *         but distinct unique-ID.
      */
+	@Override
     public Player clone() {
         if (this.location == null) {
             throw new InvalidStateException("Cannot clone player.");

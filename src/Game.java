@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -32,29 +34,16 @@ public class Game {
 	    
 	}
 
-
-	public Game(){}
+    private String fileName;
+	private Mode   mode;
+	private Board  board;
+	private int botPlayers = 0;
+	private int humanPlayers = 0;
+	private boolean ready;
+	private Player currentPlayer;
+	private int currentPlayerIndex;
 	
-	/*
-	 * API
-	 * - save
-	 * - open
-	 * - playback
-	 * - check if playing back
-	 * - make a move
-	 * - check who's turn it is
-	 * -check the current mode
-	 * - check if game finished
-	 * - check who won
-	 * - set playback speed ?
-	 * I don't know what set board and set player are. That would expose
-	 * the internal representation.
-	 * 
-	 * I'll need to implement my own callbacks for replay mode.
-	 * 
-	 * Private
-	 * -
-	 */
+	private List<Player> players;
 	
 	/**
 	 * Create a new Game with given Mode.
@@ -66,14 +55,57 @@ public class Game {
 	 * @modifies none
 	 * @return an empty Game in an unplayable state.
 	 */
-	public Game(Mode mode){}
+	public Game(Mode mode){
+	    this.mode = mode;
+	    players = new ArrayList<Player>();
+	    ready = false;
+	}
+	
+	/**
+	 * Determine if it is possible for the current player to move to the location.
+	 * 
+	 * @param location The location to query.
+	 * @return true if the current player can move to the given location.
+	 *         false otherwise.
+	 */
+	public boolean canMoveTo(Location destination) {
+	    Location currentLocation = currentPlayer.getLocation();
+	    Direction directionTo = currentLocation.getDirectionTo(destination);
+	    
+	    if (board.getAvailableDirectionsAt(
+	              currentLocation).contains(directionTo)) {
+	        return true;
+	    }
+	    
+	    return false;
+	}
+	
+	/**
+	 * Move the current player to a location.
+	 * 
+	 * @requires It is allowable to move the current player to the given location.
+	 * @modifies The location of the current player.
+	 * @throws InvalidStateException (unchecked) if it is not possible to make
+	 *         the requested move.
+	 */
+	public void moveTo(Location destination) {
+	    if (!canMoveTo(destination)) {
+	        throw new InvalidStateException(
+	                  "Cannot move to requested location: " +
+	                  destination.toString());
+	    }
+	    currentPlayer.setLocation(destination);
+	    board.setStateAt(destination, Board.LocationState.UNAVAILABLE);
+	}
 	
 	/**
 	 * Return the current mode of the Game.
 	 * 
 	 * @return The current mode of the Game, dictating the number of players.
 	 */
-	public Mode getMode(){ return null; }
+	public Mode getMode() {
+	    return this.mode;
+	}
 
 	/**
 	 * Check if the current Game is finished, which occurs
@@ -99,7 +131,13 @@ public class Game {
 	 * @requires No boards have been added to the game.
 	 * @throws InvalidStateException (unchecked) if the game already has an associated Board.
 	 */
-	public void addBoard(Board board) {}
+	public void addBoard(Board board) {
+	    if (this.board != null) {
+	        throw new InvalidStateException("Cannot add more than one board.");
+	    }
+	    
+	    this.board = new Board(board.getDimension());
+	}
 	
 	/**
 	 * Add a player to the game.
@@ -111,6 +149,37 @@ public class Game {
 	 *         already met, or the Player types do not match the required types.
 	 */
 	public void addPlayer(Player player) {
+	    if (this.mode == Mode.ONE_PLAYER) {
+	        if (this.humanPlayers == 1 && player.getType() == Player.Type.HUMAN) {
+	            throw new InvalidStateException("Too many human players.");
+	        }
+	        if (this.botPlayers == 1 &&
+	            (player.getType() == Player.Type.BOT ||
+	             player.getType() == Player.Type.BOT_HARD) ) {
+                throw new InvalidStateException("Too many bot players.");
+            }
+	        
+	    } else if (this.mode == Mode.TWO_PLAYER) {
+	        if (this.humanPlayers == 2 && player.getType() == Player.Type.HUMAN) {
+                throw new InvalidStateException("Too many human players.");
+            }
+            if (player.getType() == Player.Type.BOT ||
+                 player.getType() == Player.Type.BOT_HARD) {
+                throw new InvalidStateException("Too many bot players.");
+            }
+            
+	    } else if (this.mode == Mode.BOT_BATTLE) {
+	        if (player.getType() == Player.Type.HUMAN) {
+                throw new InvalidStateException("Too many human players.");
+            }
+            if (this.botPlayers == 2 &&
+                (player.getType() == Player.Type.BOT ||
+                 player.getType() == Player.Type.BOT_HARD) ) {
+                throw new InvalidStateException("Too many bot players.");
+            }
+	    }
+	    
+        this.players.add(player.clone());
 	    
 	}
 	
@@ -152,13 +221,48 @@ public class Game {
      * Clear the Board, reset the Player positions,
      * and optionally replay the game if it was loaded from a file.
      * 
+     * @requires A board and at least one player has been added to the game.
      * @param replay Choose whether to simulate the play of a loaded
      *        game or begin immediately from loaded state.
      * @modifies Board state, Player positions.
      * @effects Sets the initial state to make the game ready to play,
      *          and optionally simulates all loaded plays.
+     * @throws InvalidStateException (unchecked) if there is no board or
+     *         no players.
      */
-    public void begin(Boolean replay) {}
+    public void begin(Boolean replay) {
+        // TODO: implement load and replay
+        
+        if (board == null || players.size() == 0) {
+            throw new InvalidStateException(
+                      "Cannot begin a game with missing board or players");
+        }
+        
+        ready = true;
+        currentPlayerIndex = 0;
+        nextPlayer();
+        this.moveTo(new Location(board.getDimension() / 2,
+                                 board.getDimension() - 1,
+                                 board.getDimension() - 1) );
+        nextPlayer();
+        this.moveTo(new Location(board.getDimension() / 2,
+                                 0,
+                                 board.getDimension() - 1) );
+        nextPlayer();
+    }
+    
+    /**
+     * Load the current player and move to the next player.
+     * 
+     * @requires At least one player has been added to the game,
+     *           and the starting player has been selected.
+     * @modifies Current player.
+     * @effects Prepares the game for the player whose turn is next.
+     */
+    private void nextPlayer() {
+        currentPlayer = players.get(currentPlayerIndex);
+        currentPlayerIndex = (currentPlayerIndex++) % players.size();
+    }
 	
 	/**
 	 * Opens an already saved game specified by fileName. 
@@ -187,7 +291,28 @@ public class Game {
 		scanner.close();
 	}
 	
-	private String fileName;
+	/*
+     * API
+     * - save
+     * - open
+     * - playback
+     * - check if playing back
+     * - make a move
+     * - check who's turn it is
+     * -check the current mode
+     * - check if game finished
+     * - check who won
+     * - set playback speed ?
+     * I don't know what set board and set player are. That would expose
+     * the internal representation.
+     * 
+     * I'll need to implement my own callbacks for replay mode.
+     * 
+     * Private
+     * -
+     */
+    
+	
 	
 }
 

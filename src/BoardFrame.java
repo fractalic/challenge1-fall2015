@@ -43,9 +43,7 @@ public class BoardFrame extends JFrame{
 	JPanel boardPanel  = null; 
 	JPanel infoPanel   = null;
 	
-	Game game = new Game(Game.Mode.TWO_PLAYER);
-	//game.addBoard(new Board(BOARD_DIMENSION));
-	//game.addPlayer(new Player(PLAYER1_NAME, Player.Type.HUMAN));
+	private Game game;
 	
 	
 
@@ -87,6 +85,34 @@ public class BoardFrame extends JFrame{
 		}
 		
 		initialize();
+		startGame(rowCount, mode);
+	}
+	
+	/**
+	 * Start a new game.
+	 */
+	private void startGame(int dimension, Game.Mode mode) {
+        game = new Game(mode);
+        game.addBoard(new Board(rowCount));
+        Player newPlayer;
+        if (mode == Game.Mode.BOT_BATTLE) {
+            newPlayer = new Player(PLAYER1_NAME, Player.Type.BOT);
+            PLAYER1_ID = newPlayer.getSharedID();
+            newPlayer = new Player(PLAYER2_NAME, Player.Type.BOT);
+            PLAYER2_ID = newPlayer.getSharedID();
+        }
+        if (mode == Game.Mode.ONE_PLAYER) {
+            newPlayer = new Player(PLAYER1_NAME, Player.Type.HUMAN);
+            PLAYER1_ID = newPlayer.getSharedID();
+            newPlayer = new Player(PLAYER2_NAME, Player.Type.BOT);
+            PLAYER2_ID = newPlayer.getSharedID();
+        }
+        if (mode == Game.Mode.TWO_PLAYER) {
+            newPlayer = new Player(PLAYER1_NAME, Player.Type.HUMAN);
+            PLAYER1_ID = newPlayer.getSharedID();
+            newPlayer = new Player(PLAYER2_NAME, Player.Type.HUMAN);
+            PLAYER2_ID = newPlayer.getSharedID();
+        }
 	}
 
 	/**
@@ -116,7 +142,6 @@ public class BoardFrame extends JFrame{
 		this.setLocationByPlatform(true); 
 		//this.setLocationRelativeTo(null); // display frame in center of screen
 		this.setVisible(true);
-	    
 	}
 	
 	private JPanel createBoardPanel(){

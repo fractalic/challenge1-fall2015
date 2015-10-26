@@ -61,6 +61,15 @@ public class Board {
 	}
 
 	/**
+	 * Get the dimension of the board.
+	 * 
+	 * @return Dimension of the board.
+	 */
+	public int getDimension() {
+	    return this.dimension;
+	}
+	
+	/**
 	 * Set the state of a given location.
 	 * 
 	 * @requires location must be constrained to dimension - 1.
