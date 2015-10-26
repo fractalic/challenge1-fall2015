@@ -6,12 +6,10 @@ public class Location {
      * a game board.
      * 
      * Invariant:
-     * Upon creation, the location may be constrained
-     * to square bounds. The location constraints and constraint status
-     * never change.
+     * The location is immutable.
      * 
      * Invariant:
-     * Both x and y are inside the range [min,max]
+     * Both x and y are inside the range [0,max]
      * 
      */
     enum Coordinate {
@@ -36,79 +34,53 @@ public class Location {
             return this.text;
         }
     }
-    private final boolean isConstrained;
-    private final int min;
+    
+    private static final int MIN = 0;
     private final int max;
     private int x;
     private int y;
     
     /**
-     * Create an unconstrained location.
-     * 
-     * @param x The first coordinate of the location.
-     * @param y The second coordinate of the location.
-     * @return An unconstrained location at the specified coordinates.
-     */
-    public Location(final int x, final int y) {
-        this.isConstrained = false;
-        this.min = Integer.MIN_VALUE;
-        this.max = Integer.MAX_VALUE;
-        this.set(x, y);
-    }
-    
-    /**
      * Create a constrained location. The constraints are square,
      * such that both coordinates are constrained to the same bounds.
      * 
-     * @requires x in [min, max] and y in [min, max].
+     * @requires x and y both in [0, max].
      * @throws OutOfBoundsException (unchecked) if x and y do not meet constraints.
      * @param x The first coordinate of the location.
      * @param y The second coordinate of the location.
-     * @param min The minimum value of each coordinate.
      * @param max The maximum value of each coordinate.
      * @return A constrained location, at the specified coordinates.
      */
-    public Location(final int x, final int y, final int min, final int max) {
-        this.isConstrained = true;
-        this.min = min;
-        this.max = max;
-        this.set(x, y);
-    }
-    
-    /**
-     * Update the location.
-     * 
-     * @requires x and y in [this.getContraintMin(), this.getConstraintMax()]
-     * @param x The new first coordinate.
-     * @param y The new second coordinate.
-     * @throws OutOfBoundsException (unchecked) if x and y do not meet constraints.
-     * @modifies First and second coordinates of location.
-     */
-    public void set(final int x, final int y) {
-        if (this.isConstrained) {
-            if ((x >= min) && (x <= max)) {
-                this.x = x;
-            } else {
-                throw new LocationOutOfBoundsException("Cannot set Location.");
-            }
-            if ((y >= min) && (y <= max)) {
-                this.y = y;
-            } else {
-                throw new LocationOutOfBoundsException("Cannot set Location.");
-            }
-        } else {
-            this.x = x;
-            this.y = y;
+    public Location(final int x, final int y, final int max) {
+        if ((x < MIN) || (x > max) || (y < MIN) || (y > max)) {
+            throw new LocationOutOfBoundsException();
         }
+        this.x = x;
+        this.y = y;
+        this.max = max;
     }
     
     /**
-     * Check if this Location is constrained.
+     * Create a copy of a Location.
      * 
-     * @return true if this Location was constrained at creation.
+     * @param location The Location to be copied.
+     * @return A copy of the given Location.
      */
-    public boolean isConstrained() {
-        return this.isConstrained;
+    public Location clone(Location location) {
+        return new Location(location.x, location.y, location.max);
+    }
+    
+    /**
+     * Create a copy of a Location, offset by some value.
+     * 
+     * @param plusX The amount to add to the first coordinate.
+     * @param plusY The amount to add to the second coordinate.
+     * @throws LocationOutOfBoundsException if the new location exceeds
+     *         the bounds of the old one.
+     * @return A new location offset by some (x,y) distance from this.
+     */
+    public Location cloneOffset(int plusX, int plusY) {
+        return new Location(this.x + plusX, this.y + plusY, this.max);
     }
     
     /**
@@ -117,26 +89,8 @@ public class Location {
      * @return The upper bound specified at creation, or Integer.MAX_VALUE if
      *         no bound was given at creation.
      */
-    public int getConstraintMax() {
-        if (this.isConstrained) {
-            return this.max;
-        } else {
-            return Integer.MAX_VALUE;
-        }
-    }
-    
-    /**
-     * Get the value of the lower bound of this location's coordinates.
-     * 
-     * @return The lower bound specified at creation, or Integer.MIN_VALUE if
-     *         no bound was given at creation.
-     */
-    public int getConstraintMin() {
-        if (this.isConstrained) {
-            return this.min;
-        } else {
-            return Integer.MIN_VALUE;
-        }
+    public int getUpperBound() {
+        return this.max;
     }
     
     /**
