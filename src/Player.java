@@ -39,8 +39,10 @@ public class Player {
 
 	}
 	
-	private Location location;
-	private final String name;
+	private static int        ID = 1;
+	private final int         id;
+	private Location          location;
+	private final String      name;
 	private final Player.Type type;
 	
 	/*
@@ -65,7 +67,36 @@ public class Player {
 	public Player(final String name, final Player.Type type){
 	    this.name = name;
 	    this.type = type;
+	    
+	    this.id = ID;
+	    ID++;
 	}
+	
+    /**
+     * Create a copy of the player, if its location has been set.
+     * 
+     * @throws InvalidStateException (unchecked) If this Player's
+     *         location has not been set.
+     * @return A copy of the player with same name, type and location
+     *         but distinct ID.
+     */
+    public Player clone() {
+        if (this.location == null) {
+            throw new InvalidStateException("Cannot clone player.");
+        }
+        Player clonedPlayer = new Player(this.name, this.type);
+        clonedPlayer.setLocation(this.location);
+        return clonedPlayer;
+    }
+    
+    /**
+     * Get the id of this Player.
+     * 
+     * @return The unique id of this Player.
+     */
+    public int getID() {
+        return this.id;
+    }
 
 	/**
 	 * Get the location of the Player on the board.
@@ -79,10 +110,7 @@ public class Player {
 	        throw new InvalidStateException("Player's location has not been set.");
 	    }
 
-	    return new Location(location.getCoordinate(Location.Coordinate.FIRST),
-	                        location.getCoordinate(Location.Coordinate.SECOND),
-	                        location.getConstraintMin(),
-	                        location.getConstraintMax() );
+	    return location.clone();
 	}
 	
 	/**
@@ -96,8 +124,7 @@ public class Player {
 	 * @modifies Player's location.
 	 */
 	public void setLocation(final Location location) {
-	    this.location.set(location.getCoordinate(Location.Coordinate.FIRST),
-	                      location.getCoordinate(Location.Coordinate.SECOND) );
+	    this.location = location.clone();
 	}
 	
 	/**
@@ -117,6 +144,7 @@ public class Player {
 	public Player.Type getType() {
 	    return this.type;
 	}
+	
 	
 	//public boolean moveTo(Direction direction){ return false; }	
 	//public Location getOpponentLocation(){ return new Location(); }

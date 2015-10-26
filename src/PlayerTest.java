@@ -6,17 +6,52 @@ public class PlayerTest {
 
     @Test
     public void testPlayer() {
-        fail("Not yet implemented"); // TODO
+        Player testPlayer = new Player("ben", Player.Type.HUMAN);
     }
 
+    @Test(expected = InvalidStateException.class)
+    public void testGetUnsetLocation() {
+        Player testPlayer = new Player("ben", Player.Type.HUMAN);
+        testPlayer.getLocation();
+    }
+    
     @Test
-    public void testGetLocation() {
-        fail("Not yet implemented"); // TODO
+    public void testGetName() {
+        Player testPlayer = new Player("ben", Player.Type.BOT);
+        assertEquals("ben", testPlayer.getName());
+    }
+    
+    @Test
+    public void testGetType() {
+        Player testPlayer = new Player("ben", Player.Type.BOT_HARD);
+        assertEquals(Player.Type.BOT_HARD, testPlayer.getType());
     }
 
     @Test
     public void testSetLocation() {
-        fail("Not yet implemented"); // TODO
+        Player testPlayer = new Player("ben", Player.Type.HUMAN);
+        Location testLocation = new Location(10, 20, 100);
+        testPlayer.setLocation(testLocation);
+        assertEquals(testLocation,testPlayer.getLocation());
+    }
+    
+    @Test(expected = InvalidStateException.class)
+    public void testCloneInvalid() {
+        Player player1 = new Player("ben", Player.Type.BOT);
+        Player player2 = player1.clone();
+    }
+    
+    @Test
+    public void testCloneAndID() {
+        Player player1 = new Player("ben", Player.Type.BOT);
+        player1.setLocation(new Location(0,0, 10));
+        Player player2 = player1.clone();
+        
+        assertTrue(player1.getID() != player2.getID());
+        
+        assertEquals(player1.getLocation(), player2.getLocation());
+        assertEquals(player1.getName(), player2.getName());
+        assertEquals(player1.getType(), player2.getType());
     }
 
 }
