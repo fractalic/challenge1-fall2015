@@ -33,7 +33,7 @@ Here, two humans will play against each other through the provided window GUI. I
 Players will interact and play through the a swing-based window GUI. You are given skeleton code of the GUI. A relatively decent GUI designer plugin for Eclipse is [WindowBuilder Pro](http://www.eclipse.org/windowbuilder/download.php). This tool can help you get started designing GUIs in Java, but ultimately (in this assignment) you will have to write code manually to create GUI elements. 
 
 
-Our board is square, and consists of clickable buttons. However, the size (number of girds) of the board is not fixed: class BoardFrame receives the number of grids per side of the board, n. We call n the **dimension** of the board. Given n, BoardFrame draws the grid and marks the initial positions of both players. 
+Our board is square, and consists of clickable buttons. However, the size (number of grids) of the board is not fixed: class BoardFrame receives the number of grids per side of the board, n. We call n the **dimension** of the board. Given n, BoardFrame draws the grid and marks the initial positions of both players. 
 
 Upon start-up, the application prompts the player, through a dialog window, to choose one of 
 

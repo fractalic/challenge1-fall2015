@@ -24,6 +24,8 @@ public class BoardFrame extends JFrame{
 	private final String PLAYER2_MARKER  = "P2";
 	private String       PLAYER1_NAME    = "P1";
 	private String       PLAYER2_NAME    = "P2";
+	private int          PLAYER1_ID;
+	private int          PLAYER2_ID;
 
 	private final String STATUS = "";
 	

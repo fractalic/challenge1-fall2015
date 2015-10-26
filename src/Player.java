@@ -6,7 +6,8 @@ import java.awt.event.ActionListener;
  * Player's can be placed at arbitrary locations, including outside the bounds
  * of the board.
  * 
- * @author ben
+ * @author benhughes
+ * 
  * @invariant Once set, the Player's location is always defined.
  * @invariant The Player's name is never undefined.
  * @invariant The Player's name never changes.

@@ -111,6 +111,7 @@ public class Game {
 	 *         already met, or the Player types do not match the required types.
 	 */
 	public void addPlayer(Player player) {
+	    
 	}
 	
 	/**
@@ -121,7 +122,7 @@ public class Game {
 	 *         (uninitialized or finished).
 	 * @return The Player that will move next.
 	 */
-	public void getCurrentPlayer() {} // TODO: can I get rid of this?
+	public Player getCurrentPlayer() { return null; } // TODO: can I get rid of this?
 
 	/**
 	 * Save the current state of the game
