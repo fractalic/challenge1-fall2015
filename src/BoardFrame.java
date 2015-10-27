@@ -36,6 +36,7 @@ public class BoardFrame extends JFrame{
 	
 	private final Color PLAYER1_COLOR  = Color.RED;
 	private final Color PLAYER2_COLOR  = Color.LIGHT_GRAY;
+	private final Color UNAVAILABLE_COLOR    = Color.CYAN;
 	
 	private final int BUTTON_HORIZONTAL_GAP = 0;
 	private final int BUTTON_VERTICAL_GAP   = 0;
@@ -150,6 +151,13 @@ public class BoardFrame extends JFrame{
 	 */
 	private void updatePlayer(Location oldLocation, Player player) {
 	    System.out.println("Player moved: " + oldLocation.toString() + " to " + player.getLocation().toString());
+	    
+        for (Map.Entry<JButton, Location> entry : buttonPoint.entrySet()) {
+            if (entry.getValue().equals(oldLocation)) {
+                entry.getKey().setBackground(this.UNAVAILABLE_COLOR);
+                entry.getKey().setText("");
+            }
+        }
 	}
 
 	/**
@@ -229,8 +237,20 @@ public class BoardFrame extends JFrame{
 	    JButton button = (JButton) e.getSource();
 	    Location buttonLocation = buttonPoint.get(e.getSource());
 	    if (game.canMoveTo(buttonLocation)) {
-	        button.setBackground(this.PLAYER1_COLOR);
+	        Color color = Color.BLUE;
+	        String marker = "X";
+	        if (game.getCurrentPlayer().getSharedID() == this.PLAYER1_ID) {
+	            color = this.PLAYER1_COLOR;
+	            marker = this.PLAYER1_MARKER;
+	            setInfoLabelText("Turn: " + this.PLAYER2_MARKER);
+	        } else {
+	            color = this.PLAYER2_COLOR;
+	            marker = this.PLAYER2_MARKER;
+	            setInfoLabelText("Turn: " + this.PLAYER1_MARKER);
+	        }
 	        game.moveTo(buttonLocation);
+	        button.setBackground(color);
+	        button.setText(marker);
 	    }
 	}
 	
@@ -256,9 +276,6 @@ public class BoardFrame extends JFrame{
 
 		return infoPanel;
 	}
-	
-	private void setButtonColor(JButton button, Color color){}
-	private void setButtonText(JButton button, String text){}
 	
 	public void setInfoLabelText(String text) {
 		JLabel infoLabel = (JLabel) this.infoPanel.getComponent(0);

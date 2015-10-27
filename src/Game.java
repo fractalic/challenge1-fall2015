@@ -200,7 +200,9 @@ public class Game {
 	 *         (uninitialized or finished).
 	 * @return The Player that will move next.
 	 */
-	public Player getCurrentPlayer() { return null; } // TODO: can I get rid of this?
+	public Player getCurrentPlayer() { 
+	    return currentPlayer.clone();
+	}
 
 	/**
 	 * Save the current state of the game
@@ -271,8 +273,6 @@ public class Game {
     private void nextPlayer() {
         currentPlayer = players.get(currentPlayerIndex);
         currentPlayerIndex = (++currentPlayerIndex) % players.size();
-        System.out.println(currentPlayerIndex);
-        System.out.println(players.size());
     }
 	
 	/**
@@ -318,7 +318,6 @@ public class Game {
 	    for (PlayerMoveListener listener : playerMoveListeners) {
 	        listener.playerMovePerformed(previousLocation, player);
 	    }
-	    // TODO: call this somewhere.
 	}
 	
 	/*
