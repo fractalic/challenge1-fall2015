@@ -189,6 +189,17 @@ public class Location {
     }
     
     /**
+     * Convert a canoncial location string to a location.
+     * 
+     * @return The location represented by the string.
+     */
+    public static Location fromString(String locationString, int max) {
+        int x = Integer.valueOf(locationString.substring(1, 2));
+        int y = Integer.valueOf(locationString.substring(3, 4));
+        return new Location(x,y,max);
+    }
+    
+    /**
      * Convert this location to a string.
      * 
      * @return A string representing the coordinates of this location.

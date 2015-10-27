@@ -9,6 +9,12 @@ import javax.swing.JOptionPane;
 
 
 public class AppManager {
+
+    private static boolean loadFile = false;
+    private static File file;
+    private static int dimension = 1;
+    private static Game.Mode mode = Game.Mode.TWO_PLAYER;
+    
 	/**
 	 * Launch the application.
 	 */
@@ -54,7 +60,7 @@ public class AppManager {
 						                    arrModes[0]);
 						
 						
-						
+						loadFile = false;
 					} else {
 						
 						/** Prompt to open game file **/
@@ -62,9 +68,11 @@ public class AppManager {
 						int returnVal = fc.showOpenDialog(dilogParentFrame);
 
 				        if (returnVal == JFileChooser.APPROVE_OPTION) {
-				            File file = fc.getSelectedFile();
+				            file = fc.getSelectedFile();
 				            //This is where a real application would open the file.
 				        }
+				        
+				        loadFile = true;
 						
 					}
 					
@@ -84,15 +92,22 @@ public class AppManager {
 					if (modeID == JOptionPane.CLOSED_OPTION) { 
 						return; 
 					}
-					
-					Game.Mode mode = (Game.Mode) arrModes[modeID];
 
-					
-					//Game.Mode mode = Game.Mode.valueOf(selectionText); 
-					
-					BoardFrame window = new BoardFrame(7, mode);
+                    BoardFrame window;
+                    
+					if (loadFile == true) {
+					    dimension = Game.getDimensionFromFile(file.getAbsolutePath());
+					    mode = Game.getModeFromFile(file.getAbsolutePath());
+					    window = new BoardFrame(dimension, mode, file.getAbsolutePath());
+					} else {
+					    dimension = 7;
+					    mode = (Game.Mode) arrModes[modeID];
+					    window = new BoardFrame(dimension, mode, null);
+					}
 					
 					window.setVisible(true);
+					
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

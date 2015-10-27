@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -55,17 +56,18 @@ public class BoardFrame extends JFrame{
 	Map<JButton, Location> buttonPoint;
 	
 	private Game game;
-	
 
     JFrame dialogParentFrame = new JFrame();
     final JFileChooser fc = new JFileChooser();
-	
+    
+    String filename = null;
 	
 
 	/**
 	 * Create the application.
 	 */
-	public BoardFrame(int dimension, Game.Mode mode) {
+	public BoardFrame(int dimension, Game.Mode mode, String filename) {
+	    this.filename = filename;
 		
 		this.rowCount    = dimension;
 		this.columnCount = dimension;
@@ -118,6 +120,13 @@ public class BoardFrame extends JFrame{
 		
 		initialize();
 		startGame(mode);
+		if (filename != null) {
+		    try {
+		        game.replay(filename);
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
 	}
 	
 	/**
@@ -284,7 +293,7 @@ public class BoardFrame extends JFrame{
 	private JButton createButton(Color color, String text) {
 		JButton button = new JButton(text);
 		button.setPreferredSize(new Dimension(BUTTON_DIMENSION, BUTTON_DIMENSION));
-	    button.setBorder( new LineBorder(Color.BLACK) );
+	    button.setBorder( new LineBorder(Color.DARK_GRAY) );
 	    button.setOpaque(true);
     	button.setBackground(color);
    

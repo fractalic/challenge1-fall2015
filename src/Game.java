@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 
 public class Game {
@@ -47,6 +48,8 @@ public class Game {
 	private List<Player> players;
 	
 	private List<PlayerMoveListener> playerMoveListeners = new ArrayList<PlayerMoveListener>();
+	
+	private List<Location> movements = new ArrayList<Location>();
 	
 	/**
 	 * Create a new Game with given Mode.
@@ -117,6 +120,31 @@ public class Game {
             this.moveRandom();
         }
 	}
+	
+	/**
+     * Move the current player to a location.
+     * 
+     * @requires It is allowable to move the current player to the given location.
+     * @modifies The location of the current player.
+     * @throws InvalidStateException (unchecked) if it is not possible to make
+     *         the requested move.
+     */
+    private void moveToReplay(Location destination) {
+        if (!canMoveTo(destination)) {
+            throw new InvalidStateException(
+                      "Cannot move to requested location: " +
+                      destination.toString());
+        }
+        
+        Location previousLocation = currentPlayer.getLocation();
+        
+        currentPlayer.setLocation(destination);
+        board.setStateAt(destination, Board.LocationState.UNAVAILABLE);
+        
+        this.notifyPlayerMoveListeners(previousLocation, currentPlayer);
+        
+        nextPlayer();
+    }
 	
 	/**
      * Move the current player in a random direction.
@@ -309,31 +337,118 @@ public class Game {
     }
 	
 	/**
-	 * Opens an already saved game specified by fileName. 
-	 * Parses the file specified by fileName. If fileName is a valid 
-	 * game, it initializes a game and simulates it up to the last 
-	 * move specified in the file.
-	 * @param  fileName an absolute path to the game file to be opened 
-	 * @return true if file is valid game and opened successfully, 
-	 * 		   false otherwise 
+	 * Replay an already saved game specified by fileName. 
+	 * Parses the file specified by fileName.
+	 * @param  fileName an absolute path to the game file to be opened
 	 */
-	public void open(String fileName) throws IOException{
+	public void replay(String filename) throws IOException{
 
 		/* To save the game to the same file later if desired */
-		this.fileName = fileName; 
+		this.fileName = filename; 
 
 		/* Just the scanner code. */
 		Path path = Paths.get(fileName);
 		Scanner scanner = new Scanner(path);
+		
+		String[] lineContents;
+		
+		boolean passedInitialMove = false;
+		int player = 1;
          
 		// read file line by line
 		scanner.useDelimiter(System.getProperty("line.separator"));
 		while(scanner.hasNext()){
 			String line = scanner.next();
-			/* … */
+			if (line.contains("END_BOARD")) {
+			    passedInitialMove = true;
+			}
+			if (player == 1) {
+    			if (line.contains("P1_LOCATION")) {
+    			    if (passedInitialMove) {
+        			    lineContents = line.split(": ");
+                        movements.add(Location.fromString(lineContents[1],
+                                      this.board.getDimension() - 1));
+    			    }
+    			}
+    			player = 2;
+			} else {
+			    if (line.contains("P2_LOCATION")) {
+                    if (passedInitialMove) {
+                        lineContents = line.split(": ");
+                        movements.add(Location.fromString(lineContents[1],
+                                this.board.getDimension() - 1));
+                    }
+                }
+			    player = 1;
+			}
 		}
 		scanner.close();
+		for (Location move : movements) {
+		    moveToReplay(move);
+		}
 	}
+	
+	/**
+	 * Get the dimension parameter from a saved game file.
+	 * @param filename Absolute path to filename to get dimension from.
+	 */
+	public static int getDimensionFromFile(String filename) throws IOException {
+
+        /* Just the scanner code. */
+        Path path = Paths.get(filename);
+        Scanner scanner = new Scanner(path);
+        
+        String[] lineContents;
+        int dimension = 1;
+         
+        // read file line by line
+        scanner.useDelimiter(System.getProperty("line.separator"));
+        while(scanner.hasNext()){
+            String line = scanner.next();
+            if (line.contains("DIMENSION")) {
+                lineContents = line.split(": ");
+                dimension = Integer.valueOf(lineContents[1]);
+            }
+        }
+        scanner.close();
+        return dimension;
+	}
+	
+	/**
+     * Get the dimension parameter from a saved game file.
+     * @param filename Absolute path to filename to get dimension from.
+     */
+    public static Mode getModeFromFile(String filename) throws IOException {
+        Mode mode = Mode.TWO_PLAYER;
+        String[] lineContents;
+        String modeString = Mode.TWO_PLAYER.toString();
+        
+        /* Just the scanner code. */
+        Path path = Paths.get(filename);
+        Scanner scanner = new Scanner(path);
+        
+         
+        // read file line by line
+        scanner.useDelimiter(System.getProperty("line.separator"));
+        while(scanner.hasNext()){
+            String line = scanner.next();
+            if (line.contains("MODE")) {
+                lineContents = line.split(": ");
+                modeString = lineContents[1];
+            }
+        }
+        scanner.close();
+        
+        if (modeString.equals( Game.Mode.TWO_PLAYER.toString() )) {
+            mode = Game.Mode.TWO_PLAYER;
+        } else if (modeString.equals( Game.Mode.ONE_PLAYER.toString() )) {
+            mode = Game.Mode.ONE_PLAYER;
+        } else {
+            mode = Game.Mode.BOT_BATTLE;
+        }
+        
+        return mode;
+    }
 	
 	/**
 	 * Subscribe to player position updates.
