@@ -67,10 +67,16 @@ public class Game {
 	 * Determine if it is possible for the current player to move to the location.
 	 * 
 	 * @param location The location to query.
+	 * @throws InvalidStateException (unchecked) if the game has not been
+	 *         started using begin().
 	 * @return true if the current player can move to the given location.
 	 *         false otherwise.
 	 */
 	public boolean canMoveTo(Location destination) {
+	    if (!ready) {
+	        throw new InvalidStateException("Cannot move.");
+	    }
+	    
 	    Location currentLocation = currentPlayer.getLocation();
 	    Direction directionTo = currentLocation.getDirectionTo(destination);
 	    

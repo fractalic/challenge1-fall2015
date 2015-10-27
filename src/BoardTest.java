@@ -152,7 +152,49 @@ public class BoardTest {
         testLocation = initialLocation.cloneOffset(1, 1);
         testBoard.setStateAt(testLocation, Board.LocationState.UNAVAILABLE);
         
-        System.out.println(testBoard.serialize(Game.Mode.ONE_PLAYER));
+        StringBuilder expectedOutput = new StringBuilder();
+        expectedOutput.append(
+        "START_CONFIG\n" +
+            "\tDIMENSION: 7\n"+
+            "\tMODE     : ONE_PLAYER\n"+
+        "START_CONFIG\n\n"+
+        
+        "START_BOARD\n"+
+            "\tP1_LOCATION: [2,6]\n"+
+            "\tP2_LOCATION: [3,0]\n"+
+        "END_BOARD\n\n"+
+        
+        "START_BOARD\n"+
+            "\tP1_LOCATION: [3,6]\n"+
+            "\tP2_LOCATION: [3,0]\n"+
+        "END_BOARD\n\n"+
+        
+        "START_BOARD\n"+
+            "\tP1_LOCATION: [3,6]\n"+
+            "\tP2_LOCATION: [3,1]\n"+
+        "END_BOARD\n\n"+
+        
+        "START_BOARD\n"+
+            "\tP1_LOCATION: [3,5]\n"+
+            "\tP2_LOCATION: [3,1]\n"+
+        "END_BOARD\n\n"+
+        
+        "START_BOARD\n"+
+            "\tP1_LOCATION: [3,5]\n"+
+            "\tP2_LOCATION: [2,1]\n"+
+        "END_BOARD\n\n"+
+        
+        "START_BOARD\n"+
+            "\tP1_LOCATION: [3,6]\n"+
+            "\tP2_LOCATION: [2,1]\n"+
+        "END_BOARD\n\n"+
+        
+        "START_BOARD\n"+
+            "\tP1_LOCATION: [3,6]\n"+
+            "\tP2_LOCATION: [1,1]\n"+
+        "END_BOARD\n\n"
+        );
+        assertEquals(expectedOutput.toString(), testBoard.serialize(Game.Mode.ONE_PLAYER));
     }
 
 }
