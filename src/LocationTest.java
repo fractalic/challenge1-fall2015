@@ -75,6 +75,32 @@ public class LocationTest {
     }
     
     @Test
+    public void testCloneOffsetDirection() {
+        int x = 1;
+        int y = 2;
+        Direction direction = Direction.NORTH;
+        int max = 15;
+        Location testLocation = new Location(x, y, max);
+        Location clonedLocation = testLocation.cloneOffset(direction);
+        assertEquals(testLocation.getUpperBound(), clonedLocation.getUpperBound());
+        assertEquals(testLocation.getCoordinate(Location.Coordinate.FIRST),
+                     clonedLocation.getCoordinate(Location.Coordinate.FIRST));
+        assertEquals(testLocation.getCoordinate(Location.Coordinate.SECOND) + 1,
+                clonedLocation.getCoordinate(Location.Coordinate.SECOND));
+    }
+    
+    @Test(expected = LocationOutOfBoundsException.class)
+    public void testOutOfBoundsCloneOffsetDirection() {
+        int x = 1;
+        int y = 0;
+        int max = 8;
+        Direction direction = Direction.SOUTH;
+        
+        Location testLocation = new Location(x, y, max);
+        Location clonedLocation = testLocation.cloneOffset(direction);
+    }
+    
+    @Test
     public void testEquals() {
         int x = 10;
         int y = 20;

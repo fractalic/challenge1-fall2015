@@ -84,6 +84,35 @@ public class Location {
     }
     
     /**
+     * Create a copy of a Location, offset by some direction.
+     * 
+     * @param direction The direction to add to this location.
+     * @throws LocationOutOfBoundsException if the new location exceeds
+     *         its bounds.
+     * @return A new location offset by some direction from this.
+     */
+    public Location cloneOffset(final Direction direction) {
+        int plusY = 0;
+        int plusX = 0;
+        
+        switch(direction) {
+        case NORTH:
+            plusY = 1;
+            break;
+        case SOUTH:
+            plusY = -1;
+            break;
+        case EAST:
+            plusX = 1;
+            break;
+        case WEST:
+            plusX = -1;
+            break;
+        }
+        return this.cloneOffset(plusX, plusY);
+    }
+    
+    /**
      * Get the value of the upper bound of this location's coordinates.
      * 
      * @return The upper bound specified at creation, or Integer.MAX_VALUE if

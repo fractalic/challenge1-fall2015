@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -14,6 +15,7 @@ import javax.swing.border.LineBorder;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +38,7 @@ public class BoardFrame extends JFrame{
 	
 	private final Color PLAYER1_COLOR  = Color.RED;
 	private final Color PLAYER2_COLOR  = Color.LIGHT_GRAY;
-	private final Color UNAVAILABLE_COLOR    = Color.CYAN;
+	private final Color UNAVAILABLE_COLOR    = Color.BLACK;
 	
 	private final int BUTTON_HORIZONTAL_GAP = 0;
 	private final int BUTTON_VERTICAL_GAP   = 0;
@@ -54,16 +56,20 @@ public class BoardFrame extends JFrame{
 	
 	private Game game;
 	
+
+    JFrame dialogParentFrame = new JFrame();
+    final JFileChooser fc = new JFileChooser();
+	
 	
 
 	/**
 	 * Create the application.
 	 */
-	public BoardFrame(int rowCount, int columnCount, Game.Mode mode) {
+	public BoardFrame(int dimension, Game.Mode mode) {
 		
-		this.rowCount    = rowCount;
-		this.columnCount = columnCount;
-		this.dimension   = rowCount;
+		this.rowCount    = dimension;
+		this.columnCount = dimension;
+		this.dimension   = dimension;
 		this.title += " - " + mode.toString() + " Mode";
 		buttonPoint = new HashMap<JButton, Location>();
 		
@@ -73,27 +79,42 @@ public class BoardFrame extends JFrame{
 		{
 			JMenu mnFile = new JMenu("File");
 			menuBar.add(mnFile);
-			{
+			/*{
 				JMenuItem mntmOpen = new JMenuItem("Open");
 				mnFile.add(mntmOpen);
-			}
+			}*/
 			{
 				JMenuItem mntmSave = new JMenuItem("Save");
+				mntmSave.addActionListener(new ActionListener() {
+				    public void actionPerformed(ActionEvent e) {
+				        /** Prompt to open game file **/
+                        int returnVal = fc.showSaveDialog(dialogParentFrame);
+
+                        if (returnVal == JFileChooser.APPROVE_OPTION) {
+                            File file = fc.getSelectedFile();
+                            try {
+                                game.save(file.getAbsolutePath());
+                            } catch (Exception exp) {
+                                exp.printStackTrace();
+                            }
+                        }
+				    }
+				});
 				mnFile.add(mntmSave);
 			}
-			{
+			/*{
 				JMenuItem mntmSaveAndQuit = new JMenuItem("Save and Quit");
 				mnFile.add(mntmSaveAndQuit);
-			}
-			{
+			}*/
+			/*{
 				JMenuItem mntmQuit = new JMenuItem("Quit");
 				mnFile.add(mntmQuit);
-			}
+			}*/
 		}
-		{
+		/*{
 			JMenuItem mntmHelp = new JMenuItem("Help");
 			menuBar.add(mntmHelp);
-		}
+		}*/
 		
 		initialize();
 		startGame(mode);
@@ -133,7 +154,11 @@ public class BoardFrame extends JFrame{
             PLAYER2_ID = newPlayer.getSharedID();
             game.addPlayer(newPlayer);
         }
-        game.begin();
+        
+        game.begin(false, 
+                   new Location(dimension / 2, dimension - 1, dimension - 1),
+                   new Location(dimension / 2, 0, dimension - 1) );
+        
         game.addPlayerMoveListener(new PlayerMoveListener() {
             public void playerMovePerformed(Location oldLocation, Player player) {
                 updatePlayer(oldLocation, player);
@@ -156,6 +181,21 @@ public class BoardFrame extends JFrame{
             if (entry.getValue().equals(oldLocation)) {
                 entry.getKey().setBackground(this.UNAVAILABLE_COLOR);
                 entry.getKey().setText("");
+            }
+            if (entry.getValue().equals(player.getLocation())) {
+                Color color = Color.BLUE;
+                String marker = "X";
+                if (game.getCurrentPlayer().getSharedID() == this.PLAYER1_ID) {
+                    color = this.PLAYER1_COLOR;
+                    marker = this.PLAYER1_MARKER;
+                    setInfoLabelText("Turn: " + this.PLAYER2_MARKER);
+                } else {
+                    color = this.PLAYER2_COLOR;
+                    marker = this.PLAYER2_MARKER;
+                    setInfoLabelText("Turn: " + this.PLAYER1_MARKER);
+                }
+                entry.getKey().setBackground(color);
+                entry.getKey().setText(marker);
             }
         }
 	}
@@ -237,20 +277,7 @@ public class BoardFrame extends JFrame{
 	    JButton button = (JButton) e.getSource();
 	    Location buttonLocation = buttonPoint.get(e.getSource());
 	    if (game.canMoveTo(buttonLocation)) {
-	        Color color = Color.BLUE;
-	        String marker = "X";
-	        if (game.getCurrentPlayer().getSharedID() == this.PLAYER1_ID) {
-	            color = this.PLAYER1_COLOR;
-	            marker = this.PLAYER1_MARKER;
-	            setInfoLabelText("Turn: " + this.PLAYER2_MARKER);
-	        } else {
-	            color = this.PLAYER2_COLOR;
-	            marker = this.PLAYER2_MARKER;
-	            setInfoLabelText("Turn: " + this.PLAYER1_MARKER);
-	        }
 	        game.moveTo(buttonLocation);
-	        button.setBackground(color);
-	        button.setText(marker);
 	    }
 	}
 	

@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -111,6 +112,37 @@ public class Game {
 	    this.notifyPlayerMoveListeners(previousLocation, currentPlayer);
 	    
 	    nextPlayer();
+	    
+        if (currentPlayer.getType() == Player.Type.BOT) {
+            this.moveRandom();
+        }
+	}
+	
+	/**
+     * Move the current player in a random direction.
+     * 
+     * @requires The player is a bot.
+     * @modifies The location of the current player.
+     * @throws InvalidStateException (unchecked) if it is not possible to make
+     *         the requested move.
+     */
+	private void moveRandom() {
+	    if (currentPlayer.getType() != Player.Type.BOT) {
+	        throw new InvalidStateException("Player must be " + Player.Type.BOT.toString());
+	    }
+	    
+	    Location previousLocation = currentPlayer.getLocation();
+	    
+        List<Direction> directions = board.getAvailableDirectionsAt(previousLocation);
+        Direction randomDirection = directions.get( (int)Math.ceil( Math.random() * (double)directions.size() ) - 1);
+        
+        Location newLocation = previousLocation.cloneOffset(randomDirection);
+        currentPlayer.setLocation(newLocation);
+        board.setStateAt(newLocation, Board.LocationState.UNAVAILABLE);
+        
+        this.notifyPlayerMoveListeners(previousLocation, currentPlayer);
+        
+        nextPlayer();
 	}
 	
 	/**
@@ -219,19 +251,14 @@ public class Game {
 	 *         finished and is not playable.
 	 * @effects The Game state is written to fileName.
 	 */
-	void save(String fileName) throws IOException {}
-	
-	/**
-	 * Clear the Board, reset the Player positions,
-	 * and replay the game if it was loaded from a file.
-	 * 
-	 * @modifies Board state, Player positions.
-	 * @effects Sets the initial state to make the game ready to play,
-	 *          and simulates all loaded plays.
-	 */
-	public void begin() {
-	    Boolean doReplay = true;
-	    this.begin(doReplay);
+	void save(String fileName) throws IOException {
+	    /**
+	     * @source http://stackoverflow.com/questions/2885173/\
+	     *         how-to-create-a-file-and-write-to-a-file-in-java
+	     */
+	    PrintWriter writer = new PrintWriter(fileName, "UTF-8");
+	    writer.print(board.serialize(this.getMode()));
+	    writer.close();
 	}
 	
 	/**
@@ -241,16 +268,18 @@ public class Game {
      * @requires A board and at least one player has been added to the game.
      * @param replay Choose whether to simulate the play of a loaded
      *        game or begin immediately from loaded state.
+     * @param location1 Initial location of player 1.
+     * @param location2 Initial location of player 2.
      * @modifies Board state, Player positions.
      * @effects Sets the initial state to make the game ready to play,
      *          and optionally simulates all loaded plays.
      * @throws InvalidStateException (unchecked) if there is no board or
      *         no players.
      */
-    public void begin(Boolean replay) {
+    public void begin(Boolean replay, Location location1, Location location2) {
         // TODO: implement load and replay
         
-        if (board == null || players.size() == 0) {
+        if (board == null || players.size() != 2) {
             throw new InvalidStateException(
                       "Cannot begin a game with missing board or players");
         }
@@ -258,13 +287,11 @@ public class Game {
         ready = true;
         currentPlayerIndex = 0;
         nextPlayer();
-        currentPlayer.setLocation(new Location(board.getDimension() / 2,
-                                 board.getDimension() - 1,
-                                 board.getDimension() - 1) );
+        currentPlayer.setLocation(location1);
+        board.setStateAt(currentPlayer.getLocation(), Board.LocationState.UNAVAILABLE);
         nextPlayer();
-        currentPlayer.setLocation(new Location(board.getDimension() / 2,
-                                 0,
-                                 board.getDimension() - 1) );
+        currentPlayer.setLocation(location2);
+        board.setStateAt(currentPlayer.getLocation(), Board.LocationState.UNAVAILABLE);
         nextPlayer();
     }
     

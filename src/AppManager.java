@@ -61,10 +61,10 @@ public class AppManager {
 						final JFileChooser fc = new JFileChooser();
 						int returnVal = fc.showOpenDialog(dilogParentFrame);
 
-					        if (returnVal == JFileChooser.APPROVE_OPTION) {
-					            File file = fc.getSelectedFile();
-					            //This is where a real application would open the file.
-					        }
+				        if (returnVal == JFileChooser.APPROVE_OPTION) {
+				            File file = fc.getSelectedFile();
+				            //This is where a real application would open the file.
+				        }
 						
 					}
 					
@@ -90,7 +90,7 @@ public class AppManager {
 					
 					//Game.Mode mode = Game.Mode.valueOf(selectionText); 
 					
-					BoardFrame window = new BoardFrame(7, 7, mode);
+					BoardFrame window = new BoardFrame(7, mode);
 					
 					window.setVisible(true);
 				} catch (Exception e) {
