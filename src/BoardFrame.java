@@ -285,6 +285,7 @@ public class BoardFrame extends JFrame{
 	private void buttonClick(ActionEvent e) {
 	    JButton button = (JButton) e.getSource();
 	    Location buttonLocation = buttonPoint.get(e.getSource());
+	    if (game.is)
 	    if (game.canMoveTo(buttonLocation)) {
 	        game.moveTo(buttonLocation);
 	    }

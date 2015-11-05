@@ -92,6 +92,32 @@ public class Game {
 	    return false;
 	}
 	
+    /**
+     * Load the current player and move to the next player.
+     * 
+     * @requires At least one player has been added to the game,
+     *           and the starting player has been selected.
+     * @modifies Current player.
+     * @effects Prepares the game for the player whose turn is next.
+     */
+    private void nextPlayer() {
+        currentPlayer = players.get(currentPlayerIndex);
+        currentPlayerIndex = (++currentPlayerIndex) % players.size();
+    }
+	
+    /**
+     * Move the current player to the given location
+     * if the current player is a human.
+     * 
+     * @effects Current player is moved if the move is valid,
+     *          and turn passes to appropriate player.
+     */
+    public void requestMove(Location movement) {
+        if (canMoveTo(movement)) {
+            moveTo(movement);
+        }
+    }
+    
 	/**
 	 * Move the current player to a location.
 	 * 
@@ -321,19 +347,6 @@ public class Game {
         currentPlayer.setLocation(location2);
         board.setStateAt(currentPlayer.getLocation(), Board.LocationState.UNAVAILABLE);
         nextPlayer();
-    }
-    
-    /**
-     * Load the current player and move to the next player.
-     * 
-     * @requires At least one player has been added to the game,
-     *           and the starting player has been selected.
-     * @modifies Current player.
-     * @effects Prepares the game for the player whose turn is next.
-     */
-    private void nextPlayer() {
-        currentPlayer = players.get(currentPlayerIndex);
-        currentPlayerIndex = (++currentPlayerIndex) % players.size();
     }
 	
 	/**
