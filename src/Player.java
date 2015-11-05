@@ -45,9 +45,9 @@ public class Player {
 
 	}
 	
-	private static int        NEXT_UNIQUE_ID = 1;
-	private final int         uniqueID;
-	private int               sharedID;
+	//private static int        NEXT_UNIQUE_ID = 1;
+	//private final int         uniqueID;
+	//private int               sharedID;
 	private Location          location;
 	private final String      name;
 	private final Player.Type type;
@@ -62,9 +62,9 @@ public class Player {
 	    this.name = name;
 	    this.type = type;
 	    
-	    this.uniqueID = NEXT_UNIQUE_ID;
+	    /*this.uniqueID = NEXT_UNIQUE_ID;
 	    this.sharedID = this.uniqueID;
-	    NEXT_UNIQUE_ID++;
+	    NEXT_UNIQUE_ID++;*/
 	}
 	
     /**
@@ -79,7 +79,7 @@ public class Player {
         if (this.location != null) {
             clonedPlayer.setLocation(this.location);
         }
-        clonedPlayer.sharedID = this.sharedID;
+        //clonedPlayer.sharedID = this.sharedID;
         return clonedPlayer;
     }
     
@@ -88,18 +88,18 @@ public class Player {
      * 
      * @return The unique id of this Player.
      */
-    public int getID() {
+    /*public int getID() {
         return this.uniqueID;
-    }
+    }*/
     
     /**
      * Get the shared ID of this Player.
      * The shared ID can be used to determine if two players represent
      * the same data, while preventing internal representation exposure.
      */
-    public int getSharedID() {
+    /*public int getSharedID() {
         return this.sharedID;
-    }
+    }*/
 
 	/**
 	 * Get the location of the Player on the board.

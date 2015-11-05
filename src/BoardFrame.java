@@ -32,8 +32,6 @@ public class BoardFrame extends JFrame{
 	private final String PLAYER2_MARKER  = "P2";
 	private String       PLAYER1_NAME    = "P1";
 	private String       PLAYER2_NAME    = "P2";
-	private int          PLAYER1_ID;
-	private int          PLAYER2_ID;
 
 	private final String STATUS = "";
 	
@@ -133,81 +131,58 @@ public class BoardFrame extends JFrame{
 	 * Start a new game.
 	 */
 	private void startGame(Game.Mode mode) {
-        game = new Game(mode);
-        game.addBoard(new Board(this.dimension));
-        Player newPlayer;
-        if (mode == Game.Mode.BOT_BATTLE) {
-            newPlayer = new Player(PLAYER1_NAME, Player.Type.BOT);
-            PLAYER1_ID = newPlayer.getSharedID();
-            game.addPlayer(newPlayer);
-            
-            newPlayer = new Player(PLAYER2_NAME, Player.Type.BOT);
-            PLAYER2_ID = newPlayer.getSharedID();
-            game.addPlayer(newPlayer);
-        }
-        if (mode == Game.Mode.ONE_PLAYER) {
-            newPlayer = new Player(PLAYER1_NAME, Player.Type.HUMAN);
-            PLAYER1_ID = newPlayer.getSharedID();
-            game.addPlayer(newPlayer);
-            
-            newPlayer = new Player(PLAYER2_NAME, Player.Type.BOT);
-            PLAYER2_ID = newPlayer.getSharedID();
-            game.addPlayer(newPlayer);
-        }
-        if (mode == Game.Mode.TWO_PLAYER) {
-            newPlayer = new Player(PLAYER1_NAME, Player.Type.HUMAN);
-            PLAYER1_ID = newPlayer.getSharedID();
-            game.addPlayer(newPlayer);
-            
-            newPlayer = new Player(PLAYER2_NAME, Player.Type.HUMAN);
-            PLAYER2_ID = newPlayer.getSharedID();
-            game.addPlayer(newPlayer);
-        }
-        
-        game.begin(false, 
-                   new Location(dimension / 2, dimension - 1, dimension - 1),
+	    game = new Game(mode, dimension, PLAYER1_NAME, PLAYER2_NAME);
+	    
+        game.begin(new Location(dimension / 2, dimension - 1, dimension - 1),
                    new Location(dimension / 2, 0, dimension - 1) );
         
-        game.addPlayerMoveListener(new PlayerMoveListener() {
-            public void playerMovePerformed(Location oldLocation, Player player) {
-                updatePlayer(oldLocation, player);
+        game.addMoveListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateBoard((Player) e.getSource());
             }
         });
 	}
 	
 	/**
-	 * Redraw player whenever it moves.
-	 * 
-	 * @param oldLocation The Player's location before movement.
-	 * @param player The player object which moved
-	 *        (containing its new location).
-	 * 
-	 */
-	private void updatePlayer(Location oldLocation, Player player) {
-	    System.out.println("Player moved: " + oldLocation.toString() + " to " + player.getLocation().toString());
-	    
+     * Redraw player whenever it moves.
+     * 
+     * @param oldLocation The Player's location before movement.
+     * @param player The player object which moved
+     *        (containing its new location).
+     * 
+     */
+    private void updateBoard(Player player) {
+        String name = player.getName();
+        String marker;
+        Color color;
+        if (name == PLAYER1_NAME) {
+            marker = PLAYER1_MARKER;
+            color = PLAYER1_COLOR;
+        } else {
+            marker = PLAYER2_MARKER;
+            color = PLAYER2_COLOR;
+        }
+        Location location = player.getLocation();
+        Map.Entry<JButton, Location> srcBtnLoc = null;
+        Map.Entry<JButton, Location> destBtnLoc = null;
+        
         for (Map.Entry<JButton, Location> entry : buttonPoint.entrySet()) {
-            if (entry.getValue().equals(oldLocation)) {
+            if (entry.getKey().getText() == name) {
                 entry.getKey().setBackground(this.UNAVAILABLE_COLOR);
                 entry.getKey().setText("");
+                
+                srcBtnLoc = entry;
             }
-            if (entry.getValue().equals(player.getLocation())) {
-                Color color = Color.BLUE;
-                String marker = "X";
-                if (game.getCurrentPlayer().getSharedID() == this.PLAYER1_ID) {
-                    color = this.PLAYER1_COLOR;
-                    marker = this.PLAYER1_MARKER;
-                    setInfoLabelText("Turn: " + this.PLAYER2_MARKER);
-                } else {
-                    color = this.PLAYER2_COLOR;
-                    marker = this.PLAYER2_MARKER;
-                    setInfoLabelText("Turn: " + this.PLAYER1_MARKER);
-                }
+            if (entry.getValue().equals(location)) {
                 entry.getKey().setBackground(color);
                 entry.getKey().setText(marker);
+                
+                destBtnLoc = entry;
             }
         }
-	}
+        
+        System.out.println("Player moved: " + srcBtnLoc.getValue().toString() + " to " + player.getLocation().toString());
+    }
 
 	/**
 	 * Initialize the contents of the frame.
@@ -285,10 +260,7 @@ public class BoardFrame extends JFrame{
 	private void buttonClick(ActionEvent e) {
 	    JButton button = (JButton) e.getSource();
 	    Location buttonLocation = buttonPoint.get(e.getSource());
-	    if (game.is)
-	    if (game.canMoveTo(buttonLocation)) {
-	        game.moveTo(buttonLocation);
-	    }
+	    game.requestMove(buttonLocation);
 	}
 	
 	private JButton createButton(Color color, String text) {

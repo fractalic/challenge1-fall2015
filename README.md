@@ -40,7 +40,7 @@ Upon start-up, the application prompts the player, through a dialog window, to c
 1. New Game;
 2. Resume a Saved Game.
 
-If the player chooses "New Game”, then they will be asked to choose any of the modes above. If the player chooses “Resume a Saved Game”, then they will be prompted to choose a game file from the file system. The descrirption of the game file is given in **Part 3**. 
+If the player chooses "New Game”, then they will be asked to choose any of the modes above. If the player chooses “Resume a Saved Game”, then they will be prompted to choose a game file from the file system. The description of the game file is given in **Part 3**. 
 
 From the Board’s menu, the users can choose to save the game and/or quit. Users can save the game at any time (and quit if they wish), except for **Bot-Battle** mode, which cannot be interrupted and can only be saved after the battle had concluded.
 
