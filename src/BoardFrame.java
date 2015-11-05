@@ -38,6 +38,7 @@ public class BoardFrame extends JFrame {
     private final Color PLAYER1_COLOR     = Color.RED;
     private final Color PLAYER2_COLOR     = Color.LIGHT_GRAY;
     private final Color UNAVAILABLE_COLOR = Color.BLACK;
+    private final Color WIN_COLOR         = Color.ORANGE;
 
     private final int BUTTON_HORIZONTAL_GAP = 0;
     private final int BUTTON_VERTICAL_GAP   = 0;
@@ -125,6 +126,20 @@ public class BoardFrame extends JFrame {
      */
     private void startGame(Game.Mode mode) {
         game = new Game(mode, dimension, PLAYER1_NAME, PLAYER2_NAME);
+        
+        game.addMoveListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                updateBoard((Player) e.getSource());
+            }
+        });
+
+        game.addWinListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                gameWon((Player) e.getSource());
+            }
+        });
 
         if (this.filename != null) {
             try {
@@ -137,13 +152,6 @@ public class BoardFrame extends JFrame {
                     new Location(dimension / 2, dimension - 1, dimension - 1),
                     new Location(dimension / 2, 0, dimension - 1));
         }
-
-        game.addMoveListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                updateBoard((Player) e.getSource());
-            }
-        });
     }
 
     /**
@@ -192,6 +200,24 @@ public class BoardFrame extends JFrame {
 
         System.out.println("Player moved: " + srcBtnLoc.getValue().toString()
                 + " to " + player.getLocation().toString());
+    }
+
+    /**
+     * Respond to the game being won.
+     */
+    private void gameWon(Player winner) {
+        setInfoLabelText(
+                "WINNER: " + (game.getWinner().getName() == PLAYER1_NAME
+                        ? PLAYER1_MARKER : PLAYER2_MARKER) + "!");
+        for (Map.Entry<JButton, Location> entry : buttonPoint.entrySet()) {
+            Color bgColor = entry.getKey().getBackground();
+            if (bgColor != UNAVAILABLE_COLOR &&
+                    bgColor != PLAYER1_COLOR &&
+                    bgColor != PLAYER2_COLOR) {
+                entry.getKey().setBackground(WIN_COLOR);
+            }
+        }
+        this.repaint();
     }
 
     /**

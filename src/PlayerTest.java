@@ -36,14 +36,12 @@ public class PlayerTest {
     }
     
     @Test
-    public void testCloneAndID() {
+    public void testClone() {
         Player player1 = new Player("ben", Player.Type.BOT);
         player1.setLocation(new Location(0,0, 10));
         Player player2 = player1.clone();
         
-        assertTrue(player1.getID() != player2.getID());
-        assertEquals(player1.getSharedID(), player2.getSharedID());
-        
+        assertTrue(player1 != player2);
         assertEquals(player1.getLocation(), player2.getLocation());
         assertEquals(player1.getName(), player2.getName());
         assertEquals(player1.getType(), player2.getType());

@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Game {
 
@@ -38,51 +40,19 @@ public class Game {
     private String fileName;
     private Mode   mode;
     private Board  board;
-    //private int    botPlayers   = 0;
-    //private int    humanPlayers = 0;
+    // private int botPlayers = 0;
+    // private int humanPlayers = 0;
     private int    currentPlayerIndex;
+    private Timer botTimer = new Timer();
 
     private List<Player> players = new ArrayList<Player>();
 
     private List<ActionListener> moveListeners = new ArrayList<ActionListener>();
     private List<ActionListener> winListeners  = new ArrayList<ActionListener>();
-    
-    
+
     private Player winningPlayer = null;
 
-    //private List<Location> movements = new ArrayList<Location>();
-
-    /**
-     * Move the current player in a random direction.
-     * 
-     * @requires The player is a bot.
-     * @modifies The location of the current player.
-     * @throws InvalidStateException
-     *             (unchecked) if it is not possible to make the requested move.
-     */
-    private void moveRandom() {
-        Player currentPlayer = players.get(currentPlayerIndex);
-        if (currentPlayer.getType() != Player.Type.BOT) {
-            throw new InvalidStateException(
-                    "Player must be " + Player.Type.BOT.toString());
-        }
-
-        Location previousLocation = currentPlayer.getLocation();
-
-        List<Direction> directions = board
-                .getAvailableDirectionsAt(previousLocation);
-        Direction randomDirection = directions
-                .get((int) Math.ceil(Math.random() * (double) directions.size())
-                        - 1);
-
-        Location newLocation = previousLocation.cloneOffset(randomDirection);
-        currentPlayer.setLocation(newLocation);
-        board.setStateAt(newLocation, Board.LocationState.UNAVAILABLE);
-
-        // this.notifyPlayerMoveListeners(previousLocation, currentPlayer);
-
-        nextPlayer();
-    }
+    // private List<Location> movements = new ArrayList<Location>();
 
     /**
      * Check if the current Game is finished, which occurs when one player is
@@ -93,12 +63,15 @@ public class Game {
     private boolean isFinished() {
         List<Player> stuckPlayers = new ArrayList<Player>();
         for (Player candidatePlayer : players) {
-            if (board.getAvailableDirectionsAt(candidatePlayer.getLocation()).isEmpty()) {
+            if (board.getAvailableDirectionsAt(candidatePlayer.getLocation())
+                    .isEmpty()) {
                 stuckPlayers.add(candidatePlayer);
             }
         }
         if (stuckPlayers.size() > 0) {
-            winningPlayer = stuckPlayers.contains(players.get(0)) ? players.get(1) : players.get(0);
+            winningPlayer = stuckPlayers.contains(players.get(0))
+                    ? players.get(1) : players.get(0);
+            botTimer.cancel();
             return true;
         } else {
             return false;
@@ -137,8 +110,8 @@ public class Game {
                 if (line.contains("P1_LOCATION")) {
                     if (passedInitialMove) {
                         lineContents = line.split(": ");
-                        //movements.add(Location.fromString(lineContents[1],
-                         //       this.board.getDimension() - 1));
+                        // movements.add(Location.fromString(lineContents[1],
+                        // this.board.getDimension() - 1));
                     }
                 }
                 player = 2;
@@ -146,17 +119,17 @@ public class Game {
                 if (line.contains("P2_LOCATION")) {
                     if (passedInitialMove) {
                         lineContents = line.split(": ");
-                        //movements.add(Location.fromString(lineContents[1],
-                        //        this.board.getDimension() - 1));
+                        // movements.add(Location.fromString(lineContents[1],
+                        // this.board.getDimension() - 1));
                     }
                 }
                 player = 1;
             }
         }
         scanner.close();
-        //for (Location move : movements) {
-            // moveToReplay(move);
-        //}
+        // for (Location move : movements) {
+        // moveToReplay(move);
+        // }
     }
 
     /******************************************
@@ -209,6 +182,10 @@ public class Game {
 
         players.get(1).setLocation(p2Location);
         board.setStateAt(p2Location, Board.LocationState.UNAVAILABLE);
+        
+        if (mode == Mode.BOT_BATTLE) {
+            takeTurnBot();
+        }
     }
 
     /**
@@ -218,9 +195,60 @@ public class Game {
      *            The path to a game file.
      */
     public void begin(String filename) throws IOException {
-        // TODO: implement replay
+
+        /* To save the game to the same file later if desired */
+        this.fileName = filename;
+
+        /* Just the scanner code. */
+        Path path = Paths.get(fileName);
+        Scanner scanner = new Scanner(path);
+
+        String[] lineContents;
+
+        Location p1Location = null;
+        Location p1PrevLocation = null;
+
+        Location p2Location = null;
+        Location p2PrevLocation = null;
+
+        // read file line by line
+        scanner.useDelimiter(System.getProperty("line.separator"));
+        while (scanner.hasNext()) {
+            String line = scanner.next();
+            lineContents = line.split(": ");
+
+            if (line.contains("P1_LOCATION")) {
+                p1Location = Location.fromString(lineContents[1],
+                        this.board.getDimension() - 1);
+            } else if (line.contains("P2_LOCATION")) {
+                p2Location = Location.fromString(lineContents[1],
+                        this.board.getDimension() - 1);
+            }
+            
+            if (p1Location != p1PrevLocation) {
+                players.get(0).setLocation(p1Location);
+                board.setStateAt(p1Location, Board.LocationState.UNAVAILABLE);
+                notifyMoveListeners();
+                nextPlayer();
+            }
+            if (p2Location != p2PrevLocation) {
+                players.get(1).setLocation(p2Location);
+                board.setStateAt(p2Location, Board.LocationState.UNAVAILABLE);
+                notifyMoveListeners();
+                nextPlayer();
+            }
+            
+            p1PrevLocation = p1Location;
+            p2PrevLocation = p2Location;
+        }
+
+        scanner.close();
+
+        if (mode == Mode.BOT_BATTLE) {
+            takeTurnBot();
+        }
     }
-    
+
     /**
      * Return the winning Player.
      * 
@@ -344,8 +372,7 @@ public class Game {
      */
     private void notifyWinListeners() {
         for (ActionListener winListener : winListeners) {
-            ActionEvent e = new ActionEvent(
-                    players.get(currentPlayerIndex).clone(), 0, "");
+            ActionEvent e = new ActionEvent(winningPlayer.clone(), 0, "");
             winListener.actionPerformed(e);
         }
     }
@@ -382,8 +409,64 @@ public class Game {
         players.get(currentPlayerIndex).setLocation(destination);
         notifyMoveListeners();
         board.setStateAt(destination, Board.LocationState.UNAVAILABLE);
-        
-        nextPlayer();
+
+        if (!isFinished()) {
+            nextPlayer();
+            if (players.get(currentPlayerIndex)
+                    .getType() != Player.Type.HUMAN) {
+                takeTurnBot();
+            }
+        } else {
+            notifyWinListeners();
+        }
+    }
+
+    /**
+     * A bot will take it's turn if it is the current player.
+     */
+    private void takeTurnBot() {
+        Location destination;
+        if (players.get(currentPlayerIndex).getType() == Player.Type.BOT) {
+            destination = getBotMove();
+        } else if (players.get(currentPlayerIndex)
+                .getType() == Player.Type.BOT_HARD) {
+            destination = getBotHardMove();
+        } else {
+            return;
+        }
+        botTimer.schedule(new TimerTask() {
+
+            public final void run() {
+                takeTurn(destination);
+            }
+        }, 1000);
+    }
+
+    /**
+     * Determine a movement for a bot.
+     * 
+     * @return A random available location adjacent to the current player's
+     *         location.
+     */
+    private Location getBotMove() {
+        Player currentPlayer = players.get(currentPlayerIndex);
+
+        Location previousLocation = currentPlayer.getLocation();
+
+        List<Direction> directions = board
+                .getAvailableDirectionsAt(previousLocation);
+        Direction randomDirection = directions
+                .get((int) Math.ceil(Math.random() * (double) directions.size())
+                        - 1);
+
+        return previousLocation.cloneOffset(randomDirection);
+    }
+
+    /**
+     * Determine a movement for a tricky bot.
+     */
+    private Location getBotHardMove() {
+        return getBotMove();
     }
 
     /**
