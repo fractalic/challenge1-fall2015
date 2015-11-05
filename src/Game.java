@@ -53,131 +53,6 @@ public class Game {
     private List<Location> movements = new ArrayList<Location>();
 
     /**
-     * Create a new Game with given Mode. Call open() to load a previous game or
-     * begin() to begin a new Game.
-     * 
-     * @param mode
-     *            The Game mode, which sets the number of players.
-     * @requires mode is not null.
-     * @modifies none
-     * @return an empty Game in an unplayable state.
-     */
-    /*public Game(Mode mode) {
-        this.mode = mode;
-        players = new ArrayList<Player>();
-        ready = false;
-    }
-*/
-    /**
-     * Determine if it is possible for the current player to move to the
-     * location.
-     * 
-     * @param location
-     *            The location to query.
-     * @throws InvalidStateException
-     *             (unchecked) if the game has not been started using begin().
-     * @return true if the current player can move to the given location. false
-     *         otherwise.
-     */
-    /*public boolean canMoveTo(Location destination) {
-        if (!ready) {
-            throw new InvalidStateException("Cannot move.");
-        }
-
-        Location currentLocation = currentPlayer.getLocation();
-        Direction directionTo = currentLocation.getDirectionTo(destination);
-
-        if (board.getAvailableDirectionsAt(currentLocation)
-                .contains(directionTo)) {
-            return true;
-        }
-
-        return false;
-    }*/
-
-    /**
-     * Load the current player and move to the next player.
-     * 
-     * @requires At least one player has been added to the game, and the
-     *           starting player has been selected.
-     * @modifies Current player.
-     * @effects Prepares the game for the player whose turn is next.
-     */
-    /*private void nextPlayer() {
-        currentPlayer = players.get(currentPlayerIndex);
-        currentPlayerIndex = (++currentPlayerIndex) % players.size();
-    }*/
-
-    /**
-     * Move the current player to the given location if the current player is a
-     * human.
-     * 
-     * @effects Current player is moved if the move is valid, and turn passes to
-     *          appropriate player.
-     */
-    /*public void requestMove(Location movement) {
-        if (canMoveTo(movement)) {
-            moveTo(movement);
-        }
-    }*/
-
-    /**
-     * Move the current player to a location.
-     * 
-     * @requires It is allowable to move the current player to the given
-     *           location.
-     * @modifies The location of the current player.
-     * @throws InvalidStateException
-     *             (unchecked) if it is not possible to make the requested move.
-     */
-    /*public void moveTo(Location destination) {
-        if (!canMoveTo(destination)) {
-            throw new InvalidStateException(
-                    "Cannot move to requested location: "
-                            + destination.toString());
-        }
-
-        Location previousLocation = currentPlayer.getLocation();
-
-        currentPlayer.setLocation(destination);
-        board.setStateAt(destination, Board.LocationState.UNAVAILABLE);
-
-        this.notifyPlayerMoveListeners(previousLocation, currentPlayer);
-
-        nextPlayer();
-
-        if (currentPlayer.getType() == Player.Type.BOT) {
-            this.moveRandom();
-        }
-    }*/
-
-    /**
-     * Move the current player to a location.
-     * 
-     * @requires It is allowable to move the current player to the given
-     *           location.
-     * @modifies The location of the current player.
-     * @throws InvalidStateException
-     *             (unchecked) if it is not possible to make the requested move.
-     */
-    /*private void moveToReplay(Location destination) {
-        if (!canMoveTo(destination)) {
-            throw new InvalidStateException(
-                    "Cannot move to requested location: "
-                            + destination.toString());
-        }
-
-        Location previousLocation = currentPlayer.getLocation();
-
-        currentPlayer.setLocation(destination);
-        board.setStateAt(destination, Board.LocationState.UNAVAILABLE);
-
-        //this.notifyPlayerMoveListeners(previousLocation, currentPlayer);
-
-        nextPlayer();
-    }*/
-
-    /**
      * Move the current player in a random direction.
      * 
      * @requires The player is a bot.
@@ -241,82 +116,6 @@ public class Game {
     }
 
     /**
-     * Add a board to the game.
-     * 
-     * @param board
-     *            The board to be added to the game.
-     * @requires No boards have been added to the game.
-     * @throws InvalidStateException
-     *             (unchecked) if the game already has an associated Board.
-     */
-    /*public void addBoard(Board board) {
-        if (this.board != null) {
-            throw new InvalidStateException("Cannot add more than one board.");
-        }
-
-        this.board = new Board(board.getDimension());
-    }*/
-
-    /**
-     * Add a player to the game.
-     * 
-     * @param player
-     *            The player to add to the game.
-     * @requires The number of added Players must not exceed the Player limit
-     *           and must match the player types specified by the Game Mode
-     * @throws InvalidStateException
-     *             (unchecked) if limit of players for this game mode is already
-     *             met, or the Player types do not match the required types.
-     */
-    /*public void addPlayer(Player player) {
-        if (this.mode == Mode.ONE_PLAYER) {
-            if (this.humanPlayers == 1
-                    && player.getType() == Player.Type.HUMAN) {
-                throw new InvalidStateException("Too many human players.");
-            }
-            if (this.botPlayers == 1 && (player.getType() == Player.Type.BOT
-                    || player.getType() == Player.Type.BOT_HARD)) {
-                throw new InvalidStateException("Too many bot players.");
-            }
-
-        } else if (this.mode == Mode.TWO_PLAYER) {
-            if (this.humanPlayers == 2
-                    && player.getType() == Player.Type.HUMAN) {
-                throw new InvalidStateException("Too many human players.");
-            }
-            if (player.getType() == Player.Type.BOT
-                    || player.getType() == Player.Type.BOT_HARD) {
-                throw new InvalidStateException("Too many bot players.");
-            }
-
-        } else if (this.mode == Mode.BOT_BATTLE) {
-            if (player.getType() == Player.Type.HUMAN) {
-                throw new InvalidStateException("Too many human players.");
-            }
-            if (this.botPlayers == 2 && (player.getType() == Player.Type.BOT
-                    || player.getType() == Player.Type.BOT_HARD)) {
-                throw new InvalidStateException("Too many bot players.");
-            }
-        }
-
-        this.players.add(player.clone());
-
-    }*/
-
-    /**
-     * Get the Player for the current turn.
-     * 
-     * @requires The game is in a playable state.
-     * @throws InvalidStateException
-     *             (unchecked) if the game is not playable (uninitialized or
-     *             finished).
-     * @return The Player that will move next.
-     */
-    /*public Player getCurrentPlayer() {
-        return currentPlayer.clone();
-    }*/
-
-    /**
      * Save the current state of the game
      * 
      * @param fileName
@@ -335,45 +134,6 @@ public class Game {
         writer.print(board.serialize(this.getMode()));
         writer.close();
     }
-
-    /**
-     * Clear the Board, reset the Player positions, and optionally replay the
-     * game if it was loaded from a file.
-     * 
-     * @requires A board and at least one player has been added to the game.
-     * @param replay
-     *            Choose whether to simulate the play of a loaded game or begin
-     *            immediately from loaded state.
-     * @param location1
-     *            Initial location of player 1.
-     * @param location2
-     *            Initial location of player 2.
-     * @modifies Board state, Player positions.
-     * @effects Sets the initial state to make the game ready to play, and
-     *          optionally simulates all loaded plays.
-     * @throws InvalidStateException
-     *             (unchecked) if there is no board or no players.
-     */
-    /*public void begin(Boolean replay, Location location1, Location location2) {
-        // TODO: implement load and replay
-
-        if (board == null || players.size() != 2) {
-            throw new InvalidStateException(
-                    "Cannot begin a game with missing board or players");
-        }
-
-        ready = true;
-        currentPlayerIndex = 0;
-        nextPlayer();
-        currentPlayer.setLocation(location1);
-        board.setStateAt(currentPlayer.getLocation(),
-                Board.LocationState.UNAVAILABLE);
-        nextPlayer();
-        currentPlayer.setLocation(location2);
-        board.setStateAt(currentPlayer.getLocation(),
-                Board.LocationState.UNAVAILABLE);
-        nextPlayer();
-    }*/
 
     /**
      * Replay an already saved game specified by fileName. Parses the file
@@ -495,26 +255,6 @@ public class Game {
     }
 
     /**
-     * Subscribe to player position updates.
-     * 
-     * @param listener
-     *            Function to receive updates about player movements.
-     *//*
-    public void addPlayerMoveListener(PlayerMoveListener listener) {
-        playerMoveListeners.add(listener);
-    }*/
-
-    /**
-     * Notify all listeners subscribed to player movement.
-     *//*
-    public void notifyPlayerMoveListeners(Location previousLocation,
-            Player player) {
-        for (PlayerMoveListener listener : playerMoveListeners) {
-            listener.playerMovePerformed(previousLocation, player);
-        }
-    }*/
-
-    /**
 	 * THE NEW API
 	 */
     /**
@@ -602,6 +342,15 @@ public class Game {
      */
     public void addWinListener(ActionListener winListener) {
         winListeners.add(winListener);
+    }
+    
+    /**
+     * Get the player whose turn it currently is.
+     * 
+     * @return A copy of the current player.
+     */
+    public Player getCurrentPlayer() {
+        return players.get(currentPlayerIndex).clone();
     }
     
     
