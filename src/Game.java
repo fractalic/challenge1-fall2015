@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 public class Game {
 
@@ -36,21 +35,22 @@ public class Game {
 
     }
 
-    private String  fileName;
-    private Mode    mode;
-    private Board   board;
-    private int     botPlayers   = 0;
-    private int     humanPlayers = 0;
-    //private boolean ready;
-    //private Player  currentPlayer;
-    private int     currentPlayerIndex;
+    private String fileName;
+    private Mode   mode;
+    private Board  board;
+    //private int    botPlayers   = 0;
+    //private int    humanPlayers = 0;
+    private int    currentPlayerIndex;
 
     private List<Player> players = new ArrayList<Player>();
 
     private List<ActionListener> moveListeners = new ArrayList<ActionListener>();
     private List<ActionListener> winListeners  = new ArrayList<ActionListener>();
+    
+    
+    private Player winningPlayer = null;
 
-    private List<Location> movements = new ArrayList<Location>();
+    //private List<Location> movements = new ArrayList<Location>();
 
     /**
      * Move the current player in a random direction.
@@ -79,18 +79,9 @@ public class Game {
         currentPlayer.setLocation(newLocation);
         board.setStateAt(newLocation, Board.LocationState.UNAVAILABLE);
 
-        //this.notifyPlayerMoveListeners(previousLocation, currentPlayer);
+        // this.notifyPlayerMoveListeners(previousLocation, currentPlayer);
 
         nextPlayer();
-    }
-
-    /**
-     * Return the current mode of the Game.
-     * 
-     * @return The current mode of the Game, dictating the number of players.
-     */
-    public Mode getMode() {
-        return this.mode;
     }
 
     /**
@@ -99,40 +90,19 @@ public class Game {
      * 
      * @return true if one player is guaranteed to win.
      */
-    public boolean isFinished() {
-        return false;
-    }
-
-    /**
-     * Return the winning Player.
-     * 
-     * @requires The game must be finished, as determined by isFinished().
-     * @throws InvalidStateException
-     *             (unchecked) if game has not finished.
-     * @return A copy of the winning Player.
-     */
-    public Player getWinner() {
-        return null;
-    }
-
-    /**
-     * Save the current state of the game
-     * 
-     * @param fileName
-     *            The file name in which to save the game state.
-     * @requires The game is in a playable or finished state.
-     * @throws InvalidStateException
-     *             (unchecked) if the game is not finished and is not playable.
-     * @effects The Game state is written to fileName.
-     */
-    void save(String fileName) throws IOException {
-        /**
-         * @source http://stackoverflow.com/questions/2885173/\
-         *         how-to-create-a-file-and-write-to-a-file-in-java
-         */
-        PrintWriter writer = new PrintWriter(fileName, "UTF-8");
-        writer.print(board.serialize(this.getMode()));
-        writer.close();
+    private boolean isFinished() {
+        List<Player> stuckPlayers = new ArrayList<Player>();
+        for (Player candidatePlayer : players) {
+            if (board.getAvailableDirectionsAt(candidatePlayer.getLocation()).isEmpty()) {
+                stuckPlayers.add(candidatePlayer);
+            }
+        }
+        if (stuckPlayers.size() > 0) {
+            winningPlayer = stuckPlayers.contains(players.get(0)) ? players.get(1) : players.get(0);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -167,8 +137,8 @@ public class Game {
                 if (line.contains("P1_LOCATION")) {
                     if (passedInitialMove) {
                         lineContents = line.split(": ");
-                        movements.add(Location.fromString(lineContents[1],
-                                this.board.getDimension() - 1));
+                        //movements.add(Location.fromString(lineContents[1],
+                         //       this.board.getDimension() - 1));
                     }
                 }
                 player = 2;
@@ -176,24 +146,265 @@ public class Game {
                 if (line.contains("P2_LOCATION")) {
                     if (passedInitialMove) {
                         lineContents = line.split(": ");
-                        movements.add(Location.fromString(lineContents[1],
-                                this.board.getDimension() - 1));
+                        //movements.add(Location.fromString(lineContents[1],
+                        //        this.board.getDimension() - 1));
                     }
                 }
                 player = 1;
             }
         }
         scanner.close();
-        for (Location move : movements) {
-            //moveToReplay(move);
+        //for (Location move : movements) {
+            // moveToReplay(move);
+        //}
+    }
+
+    /******************************************
+     * THE NEW API
+     */
+
+    /**
+     * Create a new game.
+     * 
+     * @param mode
+     *            The mode of the game.
+     * @param dimension
+     *            The dimension of one edge of the square board.
+     * @param P1Name
+     *            The name of player 1. Used to uniquely identify the player.
+     * @param P2Name
+     *            The name of player 2. Used to uniquely identify the player.
+     */
+    public Game(final Game.Mode mode, final int dimension, final String P1Name,
+            final String P2Name) {
+        this.mode = mode;
+
+        if (mode == Mode.TWO_PLAYER) {
+            addHumanPlayer(P1Name);
+            addHumanPlayer(P2Name);
+        } else if (mode == Mode.ONE_PLAYER) {
+            addHumanPlayer(P1Name);
+            addBotPlayer(P2Name);
+        } else {
+            addBotPlayer(P1Name);
+            addBotPlayer(P2Name);
+        }
+
+        this.board = new Board(dimension);
+    }
+
+    /**
+     * Set the player positions and begin the game.
+     * 
+     * @param p1Location
+     *            Initial location of player 1.
+     * @param p2Location
+     *            Initial location of player 2.
+     */
+    public void begin(Location p1Location, Location p2Location) {
+        currentPlayerIndex = 0;
+
+        players.get(0).setLocation(p1Location);
+        board.setStateAt(p1Location, Board.LocationState.UNAVAILABLE);
+
+        players.get(1).setLocation(p2Location);
+        board.setStateAt(p2Location, Board.LocationState.UNAVAILABLE);
+    }
+
+    /**
+     * Set the player positions and begin the game.
+     * 
+     * @param filename
+     *            The path to a game file.
+     */
+    public void begin(String filename) throws IOException {
+        // TODO: implement replay
+    }
+    
+    /**
+     * Return the winning Player.
+     * 
+     * @requires The game must be finished, as determined by isFinished().
+     * @throws InvalidStateException
+     *             (unchecked) if game has not finished.
+     * @return A copy of the winning Player.
+     */
+    public Player getWinner() {
+        if (!isFinished()) {
+            throw new InvalidStateException("This is not over!");
+        }
+        return winningPlayer.clone();
+    }
+
+    /**
+     * Get the player whose turn it currently is.
+     * 
+     * @return A copy of the current player.
+     */
+    public Player getCurrentPlayer() {
+        return players.get(currentPlayerIndex).clone();
+    }
+
+    /**
+     * Attempt to move the current player to the given location.
+     * 
+     * @param destination
+     *            The location to move the player to.
+     * @return true if the player was moved. false otherwise.
+     */
+    public boolean requestMove(Location destination) {
+        if (players.get(currentPlayerIndex).getType() == Player.Type.HUMAN) {
+            if (canMove(players.get(currentPlayerIndex), destination)) {
+                takeTurn(destination);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Subscribe to movements made on board.
+     * 
+     * @param moveListener
+     *            contains actions to take when a move occurs.
+     */
+    public void addMoveListener(ActionListener moveListener) {
+        moveListeners.add(moveListener);
+    }
+
+    /**
+     * Subscribe to the game ending.
+     * 
+     * @param winListener
+     *            contains actions to take when a win occurs.
+     */
+    public void addWinListener(ActionListener winListener) {
+        winListeners.add(winListener);
+    }
+
+    /**
+     * Save the current state of the game
+     * 
+     * @param fileName
+     *            The file name in which to save the game state.
+     * @requires The game is in a playable or finished state.
+     * @throws InvalidStateException
+     *             (unchecked) if the game is not finished and is not playable.
+     * @effects The Game state is written to fileName.
+     */
+    void save(String fileName) throws IOException {
+        /**
+         * @source http://stackoverflow.com/questions/2885173/\
+         *         how-to-create-a-file-and-write-to-a-file-in-java
+         */
+        PrintWriter writer = new PrintWriter(fileName, "UTF-8");
+        writer.print(board.serialize(mode));
+        writer.close();
+    }
+
+    /******************************************
+     * Internal functions.
+     */
+
+    /**
+     * Add a human player to the game.
+     * 
+     * @param name
+     *            The name of the player to be added to the game.
+     */
+    private void addHumanPlayer(String name) {
+        this.players.add(new Player(name, Player.Type.HUMAN));
+    }
+
+    /**
+     * Add a bot player to the game.
+     * 
+     * @param name
+     *            The name of the player to be added to the game.
+     */
+    private void addBotPlayer(String name) {
+        this.players.add(new Player(name, Player.Type.BOT));
+    }
+
+    /**
+     * Notify all subscribers that a movement has been made. A copy of the
+     * player at its new location is shared as the event source.
+     */
+    private void notifyMoveListeners() {
+        for (ActionListener moveListener : moveListeners) {
+            ActionEvent e = new ActionEvent(
+                    players.get(currentPlayerIndex).clone(), 0, "");
+            moveListener.actionPerformed(e);
         }
     }
+
+    /**
+     * Notify all subscribers that the game has been won. A copy of the winning
+     * player is shared as the event source.
+     */
+    private void notifyWinListeners() {
+        for (ActionListener winListener : winListeners) {
+            ActionEvent e = new ActionEvent(
+                    players.get(currentPlayerIndex).clone(), 0, "");
+            winListener.actionPerformed(e);
+        }
+    }
+
+    /**
+     * Determine if it is possible for the current player to move to the
+     * location.
+     * 
+     * @param location
+     *            The location to query.
+     * @return true if the current player can move to the given location. false
+     *         otherwise.
+     */
+    private boolean canMove(Player player, Location destination) {
+        Location sourceLocation = player.getLocation();
+        Direction directionTo = sourceLocation.getDirectionTo(destination);
+
+        if (board.getAvailableDirectionsAt(sourceLocation)
+                .contains(directionTo)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Take the turn of the current player and move to next player.
+     * 
+     * @param destination
+     *            The movement the current player should make.
+     * @requires destination is a valid movement for the current player.
+     */
+    private void takeTurn(Location destination) {
+        players.get(currentPlayerIndex).setLocation(destination);
+        notifyMoveListeners();
+        board.setStateAt(destination, Board.LocationState.UNAVAILABLE);
+        
+        nextPlayer();
+    }
+
+    /**
+     * Select the next player.
+     */
+    private void nextPlayer() {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    }
+
+    /******************************************
+     * UTILITIES
+     */
 
     /**
      * Get the dimension parameter from a saved game file.
      * 
      * @param filename
      *            Absolute path to filename to get dimension from.
+     * @throws InvalidStateException
+     *             (unchecked) if the game dimension cannot be determined from
+     *             the given file.
      */
     public static int getDimensionFromFile(String filename) throws IOException {
 
@@ -202,7 +413,7 @@ public class Game {
         Scanner scanner = new Scanner(path);
 
         String[] lineContents;
-        int dimension = 1;
+        int dimension = 0;
 
         // read file line by line
         scanner.useDelimiter(System.getProperty("line.separator"));
@@ -214,6 +425,11 @@ public class Game {
             }
         }
         scanner.close();
+
+        if (dimension <= 0) {
+            throw new InvalidStateException(
+                    "Dimension cannot be determine from file: " + filename);
+        }
         return dimension;
     }
 
@@ -222,6 +438,9 @@ public class Game {
      * 
      * @param filename
      *            Absolute path to filename to get dimension from.
+     * @throws InvalidStateException
+     *             (unchecked) if the game mode cannot be determined from the
+     *             given file.
      */
     public static Mode getModeFromFile(String filename) throws IOException {
         Mode mode = Mode.TWO_PLAYER;
@@ -247,192 +466,13 @@ public class Game {
             mode = Game.Mode.TWO_PLAYER;
         } else if (modeString.equals(Game.Mode.ONE_PLAYER.toString())) {
             mode = Game.Mode.ONE_PLAYER;
-        } else {
+        } else if (modeString.equals(Game.Mode.BOT_BATTLE.toString())) {
             mode = Game.Mode.BOT_BATTLE;
+        } else {
+            throw new InvalidStateException(
+                    "Cannot get mode from file " + filename);
         }
 
         return mode;
     }
-
-    /**
-	 * THE NEW API
-	 */
-    /**
-     * Create a new game.
-     * @param mode The mode of the game.
-     * @param dimension The dimension of one edge of the square board.
-     * @param P1Name The name of player 1. Used to uniquely identify the player.
-     * @param P2Name The name of player 2. Used to uniquely identify the player.
-     */
-    public Game(final Game.Mode mode, final int dimension, final String P1Name, final String P2Name) {
-        this.mode = mode;
-        
-        if (mode == Mode.TWO_PLAYER) {
-            addHumanPlayer(P1Name);
-            addHumanPlayer(P2Name);
-        } else if (mode == Mode.ONE_PLAYER) {
-            addHumanPlayer(P1Name);
-            addBotPlayer(P2Name);
-        } else {
-            addBotPlayer(P1Name);
-            addBotPlayer(P2Name);
-        }
-        
-        this.board = new Board(dimension);
-    }
-    
-    /**
-     * Set the player positions and begin the game.
-     * A game cannot be loaded after begin has been called.
-     * 
-     * @param p1Location
-     *            Initial location of player 1.
-     * @param p2Location
-     *            Initial location of player 2.
-     */
-    public void begin(Location p1Location, Location p2Location) {
-        currentPlayerIndex = 0;
-        
-        players.get(0).setLocation(p1Location);
-        board.setStateAt(p1Location,
-                Board.LocationState.UNAVAILABLE);
-        
-        players.get(1).setLocation(p2Location);
-        board.setStateAt(p2Location,
-                Board.LocationState.UNAVAILABLE);
-    }
-
-    /**
-     * Attempt to move the current player to the given location.
-     * 
-     * @param destination The location to move the player to.
-     * @return true if the player was moved.
-     *         false otherwise.
-     */
-    public boolean requestMove(Location destination) {
-        if (players.get(currentPlayerIndex).getType() == Player.Type.HUMAN) {
-            if (canMove(players.get(currentPlayerIndex), destination)) {
-                takeTurn(destination);
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public void save() {
-        throw new InvalidStateException("not yet implemented");
-    }
-    public void load() {
-        throw new InvalidStateException("not yet implemented");
-    }
-    
-    /**
-     * Subscribe to movements made on board.
-     * 
-     * @param moveListener contains actions to take when a move occurs.
-     */
-    public void addMoveListener(ActionListener moveListener) {
-        moveListeners.add(moveListener);
-    }
-    
-    /**
-     * Subscribe to the game ending.
-     * 
-     * @param winListener contains actions to take when a win occurs.
-     */
-    public void addWinListener(ActionListener winListener) {
-        winListeners.add(winListener);
-    }
-    
-    /**
-     * Get the player whose turn it currently is.
-     * 
-     * @return A copy of the current player.
-     */
-    public Player getCurrentPlayer() {
-        return players.get(currentPlayerIndex).clone();
-    }
-    
-    
-    /**
-     * Internal functions.
-     */
-    
-    /**
-     * Add a human player to the game.
-     * @param name The name of the player to be added to the game.
-     */
-    private void addHumanPlayer(String name) {
-        this.players.add(new Player(name, Player.Type.HUMAN));
-    }
-    
-    /**
-     * Add a bot player to the game.
-     * @param name The name of the player to be added to the game.
-     */
-    private void addBotPlayer(String name) {
-        this.players.add(new Player(name, Player.Type.BOT));
-    }
-    
-    /**
-     * Notify all subscribers that a movement has been made.
-     * A copy of the player at its new location is shared as the event source.
-     */
-    private void notifyMoveListeners() {
-        for (ActionListener moveListener : moveListeners) {
-            ActionEvent e = new ActionEvent(players.get(currentPlayerIndex).clone(), 0, "");
-            moveListener.actionPerformed(e);
-        }
-    }
-    
-    /**
-     * Notify all subscribers that the game has been won.
-     * A copy of the winning player is shared as the event source.
-     */
-    private void notifyWinListeners() {
-        for (ActionListener winListener : winListeners) {
-            ActionEvent e = new ActionEvent(players.get(currentPlayerIndex).clone(), 0, "");
-            winListener.actionPerformed(e);
-        }
-    }
-    
-    /**
-     * Determine if it is possible for the current player to move to the
-     * location.
-     * 
-     * @param location
-     *            The location to query.
-     * @return true if the current player can move to the given location. false
-     *         otherwise.
-     */
-    private boolean canMove(Player player, Location destination) {
-        Location sourceLocation = player.getLocation();
-        Direction directionTo = sourceLocation.getDirectionTo(destination);
-
-        if (board.getAvailableDirectionsAt(sourceLocation)
-                .contains(directionTo)) {
-            return true;
-        }
-
-        return false;
-    }
-    
-    /**
-     * Take the turn of the current player and move to next player.
-     * 
-     * @param destination The movement the current player should make.
-     * @requires destination is a valid movement for the current player.
-     */
-    private void takeTurn(Location destination) {
-        players.get(currentPlayerIndex).setLocation(destination);
-        notifyMoveListeners();
-        nextPlayer();
-    }
-    
-    /**
-     * Select the next player.
-     */
-	private void nextPlayer() {
-	    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-	}
 }

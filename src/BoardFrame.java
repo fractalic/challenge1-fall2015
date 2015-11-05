@@ -118,13 +118,6 @@ public class BoardFrame extends JFrame {
 
         initialize();
         startGame(mode);
-        if (filename != null) {
-            try {
-                game.replay(filename);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -133,8 +126,17 @@ public class BoardFrame extends JFrame {
     private void startGame(Game.Mode mode) {
         game = new Game(mode, dimension, PLAYER1_NAME, PLAYER2_NAME);
 
-        game.begin(new Location(dimension / 2, dimension - 1, dimension - 1),
-                new Location(dimension / 2, 0, dimension - 1));
+        if (this.filename != null) {
+            try {
+                game.begin(this.filename);
+            } catch (Exception e) {
+                throw new InvalidStateException("Cannot open file.");
+            }
+        } else {
+            game.begin(
+                    new Location(dimension / 2, dimension - 1, dimension - 1),
+                    new Location(dimension / 2, 0, dimension - 1));
+        }
 
         game.addMoveListener(new ActionListener() {
 
