@@ -40,10 +40,8 @@ public class Game {
     private String fileName;
     private Mode   mode;
     private Board  board;
-    // private int botPlayers = 0;
-    // private int humanPlayers = 0;
     private int    currentPlayerIndex;
-    private Timer botTimer = new Timer();
+    private Timer  botTimer = new Timer();
 
     private List<Player> players = new ArrayList<Player>();
 
@@ -76,60 +74,6 @@ public class Game {
         } else {
             return false;
         }
-    }
-
-    /**
-     * Replay an already saved game specified by fileName. Parses the file
-     * specified by fileName.
-     * 
-     * @param fileName
-     *            an absolute path to the game file to be opened
-     */
-    public void replay(String filename) throws IOException {
-
-        /* To save the game to the same file later if desired */
-        this.fileName = filename;
-
-        /* Just the scanner code. */
-        Path path = Paths.get(fileName);
-        Scanner scanner = new Scanner(path);
-
-        String[] lineContents;
-
-        boolean passedInitialMove = false;
-        int player = 1;
-
-        // read file line by line
-        scanner.useDelimiter(System.getProperty("line.separator"));
-        while (scanner.hasNext()) {
-            String line = scanner.next();
-            if (line.contains("END_BOARD")) {
-                passedInitialMove = true;
-            }
-            if (player == 1) {
-                if (line.contains("P1_LOCATION")) {
-                    if (passedInitialMove) {
-                        lineContents = line.split(": ");
-                        // movements.add(Location.fromString(lineContents[1],
-                        // this.board.getDimension() - 1));
-                    }
-                }
-                player = 2;
-            } else {
-                if (line.contains("P2_LOCATION")) {
-                    if (passedInitialMove) {
-                        lineContents = line.split(": ");
-                        // movements.add(Location.fromString(lineContents[1],
-                        // this.board.getDimension() - 1));
-                    }
-                }
-                player = 1;
-            }
-        }
-        scanner.close();
-        // for (Location move : movements) {
-        // moveToReplay(move);
-        // }
     }
 
     /******************************************
@@ -182,7 +126,7 @@ public class Game {
 
         players.get(1).setLocation(p2Location);
         board.setStateAt(p2Location, Board.LocationState.UNAVAILABLE);
-        
+
         if (mode == Mode.BOT_BATTLE) {
             takeTurnBot();
         }
@@ -224,7 +168,7 @@ public class Game {
                 p2Location = Location.fromString(lineContents[1],
                         this.board.getDimension() - 1);
             }
-            
+
             if (p1Location != p1PrevLocation) {
                 players.get(0).setLocation(p1Location);
                 board.setStateAt(p1Location, Board.LocationState.UNAVAILABLE);
@@ -237,7 +181,7 @@ public class Game {
                 notifyMoveListeners();
                 nextPlayer();
             }
-            
+
             p1PrevLocation = p1Location;
             p2PrevLocation = p2Location;
         }
