@@ -101,10 +101,10 @@ public class Game {
             addHumanPlayer(P2Name);
         } else if (mode == Mode.ONE_PLAYER) {
             addHumanPlayer(P1Name);
-            addBotPlayer(P2Name);
+            addBotHardPlayer(P2Name);
         } else {
             addBotPlayer(P1Name);
-            addBotPlayer(P2Name);
+            addBotHardPlayer(P2Name);
         }
 
         this.board = new Board(dimension);
@@ -170,16 +170,26 @@ public class Game {
             }
 
             if (p1Location != p1PrevLocation) {
-                players.get(0).setLocation(p1Location);
-                board.setStateAt(p1Location, Board.LocationState.UNAVAILABLE);
-                notifyMoveListeners();
-                nextPlayer();
+                if (canMove(players.get(0), p1Location)) {
+                    players.get(0).setLocation(p1Location);
+                    board.setStateAt(p1Location,
+                            Board.LocationState.UNAVAILABLE);
+                    notifyMoveListeners();
+                    nextPlayer();
+                } else {
+                    throw new InvalidStateException("Game file is invalid.");
+                }
             }
             if (p2Location != p2PrevLocation) {
-                players.get(1).setLocation(p2Location);
-                board.setStateAt(p2Location, Board.LocationState.UNAVAILABLE);
-                notifyMoveListeners();
-                nextPlayer();
+                if (canMove(players.get(1), p2Location)) {
+                    players.get(1).setLocation(p2Location);
+                    board.setStateAt(p2Location,
+                            Board.LocationState.UNAVAILABLE);
+                    notifyMoveListeners();
+                    nextPlayer();
+                } else {
+                    throw new InvalidStateException("Game file is invalid.");
+                }
             }
 
             p1PrevLocation = p1Location;
@@ -299,6 +309,16 @@ public class Game {
     }
 
     /**
+     * Add a tricky bot player to the game.
+     * 
+     * @param name
+     *            The name of the player to be added to the game.
+     */
+    private void addBotHardPlayer(String name) {
+        this.players.add(new Player(name, Player.Type.BOT_HARD));
+    }
+
+    /**
      * Notify all subscribers that a movement has been made. A copy of the
      * player at its new location is shared as the event source.
      */
@@ -410,6 +430,45 @@ public class Game {
      * Determine a movement for a tricky bot.
      */
     private Location getBotHardMove() {
+        int random = (int) Math.round(Math.random());
+        if (random == 0) {
+            Player bot = players.get(currentPlayerIndex);
+            int botLocationX = bot.getLocation()
+                    .getCoordinate(Location.Coordinate.FIRST);
+            int botLocationY = bot.getLocation()
+                    .getCoordinate(Location.Coordinate.SECOND);
+
+            Player opponent = players
+                    .get((currentPlayerIndex + 1) % players.size());
+            int oppLocationX = opponent.getLocation()
+                    .getCoordinate(Location.Coordinate.FIRST);
+            int oppLocationY = opponent.getLocation()
+                    .getCoordinate(Location.Coordinate.SECOND);
+
+            List<Direction> suggestedDirections = new ArrayList<Direction>();
+            List<Direction> availableDirections = board
+                    .getAvailableDirectionsAt(bot.getLocation());
+
+            if (botLocationX > oppLocationX) {
+                suggestedDirections.add(Direction.WEST);
+            } else if (botLocationX < oppLocationX) {
+                suggestedDirections.add(Direction.EAST);
+            }
+            if (botLocationY > oppLocationY) {
+                suggestedDirections.add(Direction.NORTH);
+            } else if (botLocationY < oppLocationY) {
+                suggestedDirections.add(Direction.SOUTH);
+            }
+
+            for (Direction direction : suggestedDirections) {
+                if (availableDirections.contains(direction)) {
+                    System.out.println("picked suggested dir");
+                    return bot.getLocation().cloneOffset(direction);
+                }
+            }
+
+        }
+
         return getBotMove();
     }
 
