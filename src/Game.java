@@ -154,6 +154,8 @@ public class Game {
 
         Location p2Location = null;
         Location p2PrevLocation = null;
+        
+        Boolean first = true;
 
         // read file line by line
         scanner.useDelimiter(System.getProperty("line.separator"));
@@ -165,33 +167,44 @@ public class Game {
                 p1Location = Location.fromString(lineContents[1],
                         this.board.getDimension() - 1);
             } else if (line.contains("P2_LOCATION")) {
+                System.out.println(lineContents[1]);
                 p2Location = Location.fromString(lineContents[1],
                         this.board.getDimension() - 1);
-            }
+                if (first) {
+                    players.get(0).setLocation(p1Location);
+                    board.setStateAt(p1Location, Board.LocationState.UNAVAILABLE);
 
+                    players.get(1).setLocation(p2Location);
+                    board.setStateAt(p2Location, Board.LocationState.UNAVAILABLE);
+                    first = false;
+                }
+            }
+            if (!first) {
             if (p1Location != p1PrevLocation) {
-                if (canMove(players.get(0), p1Location)) {
+                //if (canMove(players.get(0), p1Location)) {
                     players.get(0).setLocation(p1Location);
                     board.setStateAt(p1Location,
                             Board.LocationState.UNAVAILABLE);
                     notifyMoveListeners();
                     nextPlayer();
-                } else {
-                    throw new InvalidStateException("Game file is invalid.");
-                }
+                //} else {
+                //    throw new InvalidStateException("Game file is invalid.");
+                //}
             }
             if (p2Location != p2PrevLocation) {
-                if (canMove(players.get(1), p2Location)) {
+                //if (canMove(players.get(1), p2Location)) {
                     players.get(1).setLocation(p2Location);
                     board.setStateAt(p2Location,
                             Board.LocationState.UNAVAILABLE);
                     notifyMoveListeners();
                     nextPlayer();
-                } else {
-                    throw new InvalidStateException("Game file is invalid.");
-                }
+                //} else {
+                //    throw new InvalidStateException("Game file is invalid.");
+                //}
             }
 
+            
+            }
             p1PrevLocation = p1Location;
             p2PrevLocation = p2Location;
         }
